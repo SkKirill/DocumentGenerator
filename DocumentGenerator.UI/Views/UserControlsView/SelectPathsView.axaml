@@ -1,0 +1,88 @@
+﻿<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.UserControlsViewModel"
+    mc:Ignorable="d"
+    d:DesignWidth="800"
+    d:DesignHeight="450"
+    x:DataType="vm:SelectPathsViewModel"
+    FontSize="30"
+    x:Class="DocumentGenerator.UI.Views.UserControlsView.SelectPathsView">
+
+    <Grid
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        Margin="20, 5, 20, 10"
+        RowDefinitions="*, *, *, *, *, *, *"
+        ColumnDefinitions="*, *">
+        
+        <TextBlock
+            Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+            HorizontalAlignment="Stretch"
+            Text="{Binding InputDataPath}"
+            Margin="0,0,0,5" />
+
+        <StackPanel
+            Orientation="Horizontal"
+            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBox
+                Width="1030"
+                Watermark="{Binding WatermarkInputDataPath}"
+                Margin="0,0,5,5"
+                HorizontalAlignment="Stretch"
+                Text="{Binding DataLocationTextBoxTextChanged}" />
+            <Button
+                Command="{Binding OpenSearchPath}"
+                Content="🔍">
+            </Button>
+        </StackPanel>
+        <TextBlock
+            Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+            Text="" />
+
+
+        <!-- Поле ввода для расположения созданных файлов -->
+        <TextBlock
+            Text="Введите расположение для созданных файлов:"
+            Margin="0,0,0,5"
+            HorizontalAlignment="Stretch"
+            Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />
+        <StackPanel
+            Orientation="Horizontal"
+            Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBox
+                Width="1030"
+                Watermark="Укажите директорию для сохранения"
+                Margin="0,0,5,5"
+                HorizontalAlignment="Stretch"
+                Text="{Binding SaveDataLocationTextBoxTextChanged}" />
+            <Button
+                Command="{Binding OpenSearchFolder}"
+                Content="🔍"/>
+        </StackPanel>
+        <TextBlock
+            Margin="0,0,0,15"
+            Grid.Row="5"
+            Grid.Column="0" />
+
+
+        <!-- Кнопки внизу -->
+
+        <Button
+            Grid.Row="6" Grid.Column="0"
+            HorizontalAlignment="Left"
+            Margin="40,0,40, 0"
+            Command="{Binding ClearActionButton}"
+            Background="Brown"
+            Content="Очистить" />
+        <Button
+            Grid.Row="6" Grid.Column="1"
+            Margin="40,0,40, 0"
+            HorizontalAlignment="Right"
+            Background="Green"
+            Command="{Binding ContinueButton}"
+            Content="Продолжить" />
+    </Grid>
+</UserControl>
