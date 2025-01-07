@@ -41,14 +41,14 @@
                     CornerRadius="10"
                     Watermark="путь к файлу..."
                     Margin="1, 2"
-                    Text="{Binding DataLocationTextBoxTextChanged}" />
+                    Text="{Binding LocationDataText}" />
                 <Button
                     Grid.Column="1"
                     CornerRadius="10"
                     Margin="1, 2"
                     HorizontalAlignment="Stretch"
                     Width="60"
-                    Command="{Binding OpenSearchPath}">
+                    Command="{Binding OpenSearchPathCommand}">
                     <Image
                         Margin="5,5,5,5"
                         Source="../../Assets/Icons/magnifier.ico">
@@ -58,8 +58,8 @@
             <TextBlock
                 HorizontalAlignment="Stretch"
                 FontSize="18"
-                Text="{Binding ValidTextLabelDataPath}"
-                Foreground="{Binding ColorValidDataPath}" />
+                Text="{Binding HelpLabelSearchPath}"
+                Foreground="{Binding HelpLabelSearchPathColor}" />
         </StackPanel>
 
         <StackPanel
@@ -80,14 +80,14 @@
                     Watermark="путь к папке..."
                     HorizontalAlignment="Stretch"
                     CornerRadius="10"
-                    Text="{Binding SaveDataLocationTextBoxTextChanged}" />
+                    Text="{Binding LocationFolderSaveText}" />
                 <Button
                     Grid.Column="1"
                     Margin="1, 2"
                     CornerRadius="10"
                     HorizontalAlignment="Stretch"
                     Width="60"
-                    Command="{Binding OpenSearchFolder}">
+                    Command="{Binding OpenSearchFolderCommand}">
                     <Image
                         Margin="5,5,5,5"
                         Source="../../Assets/Icons/magnifier.ico">
@@ -97,8 +97,8 @@
             <TextBlock
                 HorizontalAlignment="Stretch"
                 FontSize="18"
-                Text="{Binding ValidTextLabelFolderPath}"
-                Foreground="{Binding ColorValidSaveDataFolder}"
+                Text="{Binding HelpLabelSearchFolder}"
+                Foreground="{Binding HelpLabelSearchFolderColor}"
                 Margin="0,0,0,5" />
         </StackPanel>
 
@@ -108,7 +108,7 @@
                 Grid.Row="0" Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 Margin="35,0,150, 0"
-                Command="{Binding ClearActionButton}"
+                Command="{Binding GoBackActionCommand}"
                 Background="OrangeRed"
                 HorizontalContentAlignment="Center"
                 CornerRadius="10"
@@ -122,7 +122,7 @@
                 VerticalAlignment="Bottom"
                 Margin="90,3,25, 0"
                 Background="LimeGreen"
-                Command="{Binding ContinueButton}">
+                Command="{Binding ContinueActionCommand}">
                 <Button.Content>
                     <StackPanel
                         Orientation="Horizontal">

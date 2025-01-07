@@ -29,7 +29,7 @@
                 Grid.Row="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
-                Text="Выберите макет для начала создания:"
+                Text="Идет процесс создания:"
                 Margin="0,0,0,0" />
             <Border
                 Grid.Row="1"
@@ -46,14 +46,14 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid
-                                    ColumnDefinitions="Auto, *, Auto"
-                                    Margin="5">
+                                    Margin="5,0,0,0"
+                                    ColumnDefinitions="Auto, Auto">
                                     <TextBlock
                                         Grid.Column="1"
+                                        FontStyle="Normal"
                                         Text="{Binding Text}"
                                         Foreground="{Binding Color}"
-                                        VerticalAlignment="Center"
-                                        Margin="5,0" />
+                                        VerticalAlignment="Center" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

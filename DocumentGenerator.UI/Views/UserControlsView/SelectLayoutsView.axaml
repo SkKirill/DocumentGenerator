@@ -46,16 +46,16 @@
                             <DataTemplate>
                                 <Grid
                                     ColumnDefinitions="Auto, *, Auto"
-                                    Margin="5">
+                                    Margin="5,0,5,5">
                                     <CheckBox
                                         Grid.Column="0"
                                         IsChecked="{Binding IsChecked}"
                                         VerticalAlignment="Center" />
                                     <TextBlock
                                         Grid.Column="1"
+                                        FontSize="24"
                                         Text="{Binding Text}"
-                                        VerticalAlignment="Center"
-                                        Margin="5,0" />
+                                        VerticalAlignment="Center" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
