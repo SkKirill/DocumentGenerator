@@ -4,5 +4,6 @@ public enum UserControlType
 {
     Layouts,
     Path,
+    Edit,
     Process
 }

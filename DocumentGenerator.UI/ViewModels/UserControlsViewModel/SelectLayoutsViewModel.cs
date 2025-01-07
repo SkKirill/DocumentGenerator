@@ -4,14 +4,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Subjects;
+using DocumentGenerator.UI.Models;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
 
 public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
 {
-    public ObservableCollection<ListItemViewModel> Items { get; set; }
-    public ReactiveCommand<ListItemViewModel, Unit> EditItemCommand { get; set; }
+    public ObservableCollection<ListItemModel> Items { get; set; }
+    public ReactiveCommand<ListItemModel, Unit> EditItemCommand { get; set; }
     public ReactiveCommand<Unit, Unit> DoSomethingCommand { get; set; }
     public IObservable<bool> CompleteView => _completeView;
     public ReactiveCommand<Unit, Unit> ClearActionButton { get; }
@@ -27,13 +28,13 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
 
         /* из бд достать что уже есть*/
         Items = new();
-        Items.Add(new ListItemViewModel("Первый макет", () => Console.WriteLine("Изменить первый")));
-        Items.Add(new ListItemViewModel("Второй макет", () => Console.WriteLine("Изменить второй")));
-        Items.Add(new ListItemViewModel("Третий макет", () => Console.WriteLine("Изменить третий")));
-        Items.Add(new ListItemViewModel("Четвертый макет", () => Console.WriteLine("Изменить третий")));
-        Items.Add(new ListItemViewModel("Пятый макет", () => Console.WriteLine("Изменить третий")));
+        Items.Add(new ListItemModel("Первый макет", () => Console.WriteLine("Изменить первый")));
+        Items.Add(new ListItemModel("Второй макет", () => Console.WriteLine("Изменить второй")));
+        Items.Add(new ListItemModel("Третий макет", () => Console.WriteLine("Изменить третий")));
+        Items.Add(new ListItemModel("Четвертый макет", () => Console.WriteLine("Изменить третий")));
+        Items.Add(new ListItemModel("Пятый макет", () => Console.WriteLine("Изменить третий")));
 
-        EditItemCommand = ReactiveCommand.Create<ListItemViewModel>(EditItem);
+        EditItemCommand = ReactiveCommand.Create<ListItemModel>(EditItem);
         DoSomethingCommand = ReactiveCommand.Create(DoSomethingWithCheckedItems);
     }
 
@@ -48,12 +49,12 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
         // TODO: обработка нажатия в окошко поиска директории
     }
 
-    public void EditItem(ListItemViewModel item)
+    public void EditItem(ListItemModel item)
     {
         item.EditAction();
     }
 
-    public IEnumerable<ListItemViewModel> GetCheckedItems()
+    public IEnumerable<ListItemModel> GetCheckedItems()
     {
         return Items.Where(item => item.IsChecked);
     }

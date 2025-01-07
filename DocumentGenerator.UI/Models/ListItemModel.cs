@@ -1,9 +1,10 @@
 using System;
+using DocumentGenerator.UI.ViewModels;
 using ReactiveUI;
 
-namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
+namespace DocumentGenerator.UI.Models;
 
-public class ListItemViewModel : ViewModelBase
+public class ListItemModel : ReactiveObject
 {
     private bool _isChecked;
     public bool IsChecked
@@ -19,7 +20,7 @@ public class ListItemViewModel : ViewModelBase
     }
     public Action EditAction { get; set; }
 
-    public ListItemViewModel(string text, Action editAction)
+    public ListItemModel(string text, Action editAction)
     {
         Text = text;
         EditAction = editAction;

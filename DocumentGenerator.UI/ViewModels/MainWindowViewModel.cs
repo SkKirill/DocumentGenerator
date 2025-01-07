@@ -26,7 +26,9 @@ public class MainWindowViewModel : ViewModelBase
         _viewModels = new()
         {
             { UserControlType.Layouts, new SelectLayoutsViewModel() },
-            { UserControlType.Path, new SelectPathsViewModel() }
+            { UserControlType.Path, new SelectPathsViewModel() },
+            { UserControlType.Edit, new EditLayoutViewModel() },
+            { UserControlType.Process, new ProcessingViewModel() }
         };
         ControlSelectPaths = _viewModels[UserControlType.Path];
         _subscriptions = new List<IDisposable>();
@@ -41,17 +43,51 @@ public class MainWindowViewModel : ViewModelBase
 
     private void OnComplete(bool success)
     {
-        switch (ControlSelectPaths)
+        if (success)
         {
-            case SelectLayoutsViewModel:
+            switch (ControlSelectPaths)
             {
-                ControlSelectPaths = _viewModels[UserControlType.Path];
-                break;
+                case SelectPathsViewModel:
+                {
+                    ControlSelectPaths = _viewModels[UserControlType.Layouts];
+                    break;
+                }
+                case SelectLayoutsViewModel:
+                {
+                    ControlSelectPaths = _viewModels[UserControlType.Process];
+                    break;
+                }
+                case EditLayoutViewModel:
+                {
+                    ControlSelectPaths = _viewModels[UserControlType.Layouts];
+                    break;
+                }
+                case ProcessingViewModel:
+                {
+                    ControlSelectPaths = _viewModels[UserControlType.Edit];
+                    break;
+                }
             }
-            case SelectPathsViewModel:
+        }
+        else
+        {
+            switch (ControlSelectPaths)
             {
-                ControlSelectPaths = _viewModels[UserControlType.Layouts];
-                break;
+                case SelectLayoutsViewModel:
+                {
+                    ControlSelectPaths = _viewModels[UserControlType.Path];
+                    break;
+                }
+                case EditLayoutViewModel:
+                {
+                    ControlSelectPaths = _viewModels[UserControlType.Path];
+                    break;
+                }
+                case ProcessingViewModel:
+                {
+                    ControlSelectPaths = _viewModels[UserControlType.Layouts];
+                    break;
+                }
             }
         }
     }
