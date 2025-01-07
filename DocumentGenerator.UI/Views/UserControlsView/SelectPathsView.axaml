@@ -6,83 +6,137 @@
     xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.UserControlsViewModel"
     mc:Ignorable="d"
     d:DesignWidth="800"
-    d:DesignHeight="450"
+    d:DesignHeight="340"
     x:DataType="vm:SelectPathsViewModel"
     FontSize="30"
+    Width="800"
+    Height="340"
+    MaxWidth="800"
+    MaxHeight="340"
+    MinHeight="340"
+    MinWidth="800"
     x:Class="DocumentGenerator.UI.Views.UserControlsView.SelectPathsView">
 
-    <Grid
+    <StackPanel
+        Orientation="Vertical"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
-        Margin="20, 5, 20, 10"
-        RowDefinitions="*, *, *, *, *, *, *"
-        ColumnDefinitions="*, *">
-        
-        <TextBlock
-            Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-            HorizontalAlignment="Stretch"
-            Text="{Binding InputDataPath}"
-            Margin="0,0,0,5" />
+        Margin="20, 15, 20, 0">
 
         <StackPanel
-            Orientation="Horizontal"
-            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBox
-                Width="1030"
-                Watermark="{Binding WatermarkInputDataPath}"
-                Margin="0,0,5,5"
+            Orientation="Vertical"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+            <TextBlock
+                Text="Укажите расположение данных:"
                 HorizontalAlignment="Stretch"
-                Text="{Binding DataLocationTextBoxTextChanged}" />
+                Margin="1,2" />
+            <Grid
+                ColumnDefinitions="10*, 1*"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+                <TextBox
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    CornerRadius="10"
+                    Watermark="путь к файлу..."
+                    Margin="1, 2"
+                    Text="{Binding DataLocationTextBoxTextChanged}" />
+                <Button
+                    Grid.Column="1"
+                    CornerRadius="10"
+                    Margin="1, 2"
+                    HorizontalAlignment="Stretch"
+                    Width="60"
+                    Command="{Binding OpenSearchPath}">
+                    <Image
+                        Margin="5,5,5,5"
+                        Source="../../Assets/Icons/magnifier.ico">
+                    </Image>
+                </Button>
+            </Grid>
+            <TextBlock
+                HorizontalAlignment="Stretch"
+                FontSize="18"
+                Text="{Binding ValidTextLabelDataPath}"
+                Foreground="{Binding ColorValidDataPath}" />
+        </StackPanel>
+
+        <StackPanel
+            Orientation="Vertical"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+            <TextBlock
+                Text="Укажите папку для созданных файлов:"
+                Margin="1, 2"
+                HorizontalAlignment="Stretch" />
+            <Grid
+                ColumnDefinitions="10*, 1*"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+                <TextBox
+                    Grid.Column="0"
+                    Margin="1, 2"
+                    Watermark="путь к папке..."
+                    HorizontalAlignment="Stretch"
+                    CornerRadius="10"
+                    Text="{Binding SaveDataLocationTextBoxTextChanged}" />
+                <Button
+                    Grid.Column="1"
+                    Margin="1, 2"
+                    CornerRadius="10"
+                    HorizontalAlignment="Stretch"
+                    Width="60"
+                    Command="{Binding OpenSearchFolder}">
+                    <Image
+                        Margin="5,5,5,5"
+                        Source="../../Assets/Icons/magnifier.ico">
+                    </Image>
+                </Button>
+            </Grid>
+            <TextBlock
+                HorizontalAlignment="Stretch"
+                FontSize="18"
+                Text="{Binding ValidTextLabelFolderPath}"
+                Foreground="{Binding ColorValidSaveDataFolder}"
+                Margin="0,0,0,5" />
+        </StackPanel>
+
+        <Grid
+            ColumnDefinitions="*, *">
             <Button
-                Command="{Binding OpenSearchPath}"
-                Content="🔍">
+                Grid.Row="0" Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                Margin="35,0,150, 0"
+                Command="{Binding ClearActionButton}"
+                Background="OrangeRed"
+                HorizontalContentAlignment="Center"
+                CornerRadius="10"
+                IsVisible="False"
+                Content="{Binding }" />
+            <Button
+                CornerRadius="10"
+                HorizontalContentAlignment="Center"
+                Grid.Row="0" Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Bottom"
+                Margin="90,3,25, 0"
+                Background="LimeGreen"
+                Command="{Binding ContinueButton}">
+                <Button.Content>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Text="Продолжить ">
+                        </TextBlock>
+                        <Image
+                            Width="35"
+                            Margin="0,4,0,0"
+                            Source="../../Assets/Icons/arrow-right.ico">
+                        </Image>
+                    </StackPanel>
+                </Button.Content>
             </Button>
-        </StackPanel>
-        <TextBlock
-            Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-            Text="" />
-
-
-        <!-- Поле ввода для расположения созданных файлов -->
-        <TextBlock
-            Text="Введите расположение для созданных файлов:"
-            Margin="0,0,0,5"
-            HorizontalAlignment="Stretch"
-            Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />
-        <StackPanel
-            Orientation="Horizontal"
-            Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBox
-                Width="1030"
-                Watermark="Укажите директорию для сохранения"
-                Margin="0,0,5,5"
-                HorizontalAlignment="Stretch"
-                Text="{Binding SaveDataLocationTextBoxTextChanged}" />
-            <Button
-                Command="{Binding OpenSearchFolder}"
-                Content="🔍"/>
-        </StackPanel>
-        <TextBlock
-            Margin="0,0,0,15"
-            Grid.Row="5"
-            Grid.Column="0" />
-
-
-        <!-- Кнопки внизу -->
-
-        <Button
-            Grid.Row="6" Grid.Column="0"
-            HorizontalAlignment="Left"
-            Margin="40,0,40, 0"
-            Command="{Binding ClearActionButton}"
-            Background="Brown"
-            Content="Очистить" />
-        <Button
-            Grid.Row="6" Grid.Column="1"
-            Margin="40,0,40, 0"
-            HorizontalAlignment="Right"
-            Background="Green"
-            Command="{Binding ContinueButton}"
-            Content="Продолжить" />
-    </Grid>
+        </Grid>
+    </StackPanel>
 </UserControl>

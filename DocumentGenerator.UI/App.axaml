@@ -13,4 +13,11 @@
         <FluentTheme>
         </FluentTheme>
     </Application.Styles>
+    
+    <Application.Resources>
+        <FontFamily
+            x:Key="FuturaNewFontFamily">
+            avares://DocumentGenerator.UI/Assets/Fonts/FuturaNew#Futura New
+        </FontFamily>
+    </Application.Resources>
 </Application>

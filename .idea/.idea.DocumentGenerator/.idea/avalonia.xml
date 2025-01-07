@@ -4,9 +4,11 @@
     <option name="projectPerEditor">
       <map>
         <entry key="DocumentGenerator.UI/App.axaml" value="DocumentGenerator.UI/DocumentGenerator.UI.csproj" />
+        <entry key="DocumentGenerator.UI/Assets/Recources/ResourceClasses.axaml" value="DocumentGenerator.UI/DocumentGenerator.UI.csproj" />
         <entry key="DocumentGenerator.UI/Views/MainWindow.axaml" value="DocumentGenerator.UI/DocumentGenerator.UI.csproj" />
         <entry key="DocumentGenerator.UI/Views/UserControls/SelectPathUserControl.axaml" value="DocumentGenerator.UI/DocumentGenerator.UI.csproj" />
         <entry key="DocumentGenerator.UI/Views/UserControlsView/SelectLayoutsView.axaml" value="DocumentGenerator.UI/DocumentGenerator.UI.csproj" />
+        <entry key="DocumentGenerator.UI/Views/UserControlsView/SelectPathsView.axaml" value="DocumentGenerator.UI/DocumentGenerator.UI.csproj" />
       </map>
     </option>
   </component>

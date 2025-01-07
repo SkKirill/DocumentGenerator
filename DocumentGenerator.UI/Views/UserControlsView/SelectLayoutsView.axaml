@@ -1,25 +1,119 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.UserControlsViewModel"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:DataType="vm:SelectLayoutsViewModel"
-             x:Class="DocumentGenerator.UI.Views.UserControlsView.SelectLayoutsView">
-    <Grid>
-        <Button
-            Grid.Row="6" Grid.Column="0"
-            HorizontalAlignment="Left"
-            Margin="40,0,40, 0"
-            Command="{Binding ClearActionButton}"
-            Background="Brown"
-            Content="Очистить" />
-        <Button
-            Grid.Row="6" Grid.Column="1"
-            Margin="40,0,40, 0"
-            HorizontalAlignment="Right"
-            Background="Green"
-            Command="{Binding ContinueButton}"
-            Content="Продолжить" />
+﻿<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.UserControlsViewModel"
+    mc:Ignorable="d"
+    d:DesignWidth="800"
+    d:DesignHeight="340"
+    x:DataType="vm:SelectLayoutsViewModel"
+    FontSize="30"
+    Width="800"
+    Height="340"
+    MinHeight="340"
+    MinWidth="800"
+    x:Class="DocumentGenerator.UI.Views.UserControlsView.SelectLayoutsView">
+
+    <Grid
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        RowDefinitions="6*, 1.5*"
+        Margin="20, 15, 20, 20">
+
+        <Grid
+            VerticalAlignment="Stretch"
+            RowDefinitions="*, 7*"
+            HorizontalAlignment="Stretch">
+            <TextBlock
+                Grid.Row="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                Text="Выберите макет для начала создания:"
+                Margin="0,0,0,0" />
+            <Border
+                Grid.Row="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                CornerRadius="10"
+                Margin="0, 5, 5, 15"
+                BorderThickness="1"
+                BorderBrush="Black">
+                <ScrollViewer>
+                    <ItemsControl
+                        ItemsSource="{Binding Items}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid
+                                    ColumnDefinitions="Auto, *, Auto"
+                                    Margin="5">
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        IsChecked="{Binding IsChecked}"
+                                        VerticalAlignment="Center" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Text="{Binding Text}"
+                                        VerticalAlignment="Center"
+                                        Margin="5,0" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <Grid
+            VerticalAlignment="Bottom"
+            Grid.Row="1" Grid.ColumnSpan="2"
+            ColumnDefinitions="*, *">
+            <Button
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                Margin="25,0,110, 0"
+                Command="{Binding ClearActionButton}"
+                Background="OrangeRed"
+                HorizontalContentAlignment="Center"
+                CornerRadius="10">
+                <Button.Content>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <Image
+                            Width="36"
+                            Height="34"
+                            VerticalAlignment="Stretch"
+                            Margin="0,4,0,0"
+                            Source="../../Assets/Icons/left-arrow.ico">
+                        </Image>
+                        <TextBlock
+                            Text=" Вернуться">
+                        </TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button
+                CornerRadius="10"
+                HorizontalContentAlignment="Center"
+                Grid.Row="0" Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                Margin="90,0,25, 0"
+                Background="LimeGreen"
+                Command="{Binding ContinueButton}">
+                <Button.Content>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Text="Продолжить ">
+                        </TextBlock>
+                        <Image
+                            Width="35"
+                            Margin="0,4,0,0"
+                            Source="../../Assets/Icons/arrow-right.ico">
+                        </Image>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>
