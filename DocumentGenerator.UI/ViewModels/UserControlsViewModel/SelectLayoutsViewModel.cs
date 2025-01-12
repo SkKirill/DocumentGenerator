@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Subjects;
 using DocumentGenerator.UI.Models;
+using DocumentGenerator.UI.Services;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
@@ -17,7 +18,7 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
     public IObservable<bool> CompleteView => _completeView;
     public ReactiveCommand<Unit, Unit> ClearActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
-    private Subject<bool> _completeView;
+    private readonly Subject<bool> _completeView;
 
     public SelectLayoutsViewModel()
     {
@@ -27,12 +28,10 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
 
 
         /* из бд достать что уже есть*/
-        Items = new();
-        Items.Add(new ListItemModel("Первый макет", () => Console.WriteLine("Изменить первый")));
-        Items.Add(new ListItemModel("Второй макет", () => Console.WriteLine("Изменить второй")));
-        Items.Add(new ListItemModel("Третий макет", () => Console.WriteLine("Изменить третий")));
-        Items.Add(new ListItemModel("Четвертый макет", () => Console.WriteLine("Изменить третий")));
-        Items.Add(new ListItemModel("Пятый макет", () => Console.WriteLine("Изменить третий")));
+        Items =
+        [
+            new ListItemModel("Первый макет", () => Console.WriteLine("Изменить первый"))
+        ];
 
         EditItemCommand = ReactiveCommand.Create<ListItemModel>(EditItem);
         DoSomethingCommand = ReactiveCommand.Create(DoSomethingWithCheckedItems);
@@ -46,20 +45,19 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
     private void RunClearAction()
     {
         _completeView.OnNext(false);
-        // TODO: обработка нажатия в окошко поиска директории
     }
 
-    public void EditItem(ListItemModel item)
+    private static void EditItem(ListItemModel item)
     {
         item.EditAction();
     }
 
-    public IEnumerable<ListItemModel> GetCheckedItems()
+    private IEnumerable<ListItemModel> GetCheckedItems()
     {
         return Items.Where(item => item.IsChecked);
     }
 
-    public void DoSomethingWithCheckedItems()
+    private void DoSomethingWithCheckedItems()
     {
         var checkedItems = GetCheckedItems();
         foreach (var item in checkedItems)

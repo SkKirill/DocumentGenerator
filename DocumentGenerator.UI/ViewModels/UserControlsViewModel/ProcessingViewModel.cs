@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Subjects;
 using Avalonia.Media;
 using DocumentGenerator.UI.Models;
+using DocumentGenerator.UI.Services;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;

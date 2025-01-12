@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DocumentGenerator.UI.ViewModels;
+namespace DocumentGenerator.UI.Services;
 
 public interface IUserControlsNotifier
 {

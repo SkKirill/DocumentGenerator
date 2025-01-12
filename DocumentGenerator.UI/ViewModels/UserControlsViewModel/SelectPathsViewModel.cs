@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
+using DocumentGenerator.UI.Services;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
@@ -23,17 +24,17 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
     /// </summary>
     public IImmutableSolidColorBrush HelpLabelSearchPathColor
     {
-        get => _helpLabelSearchPathColor; 
+        get => _helpLabelSearchPathColor;
         set => this.RaiseAndSetIfChanged(ref _helpLabelSearchPathColor, value);
     }
-    
+
     /// <summary>
     /// Цвет строки подсказки под полем ввода папки для сохранения файлов
     /// </summary>
     public IImmutableSolidColorBrush HelpLabelSearchFolderColor
     {
         get => _helpLabelSearchFolderColor;
-        set => this.RaiseAndSetIfChanged(ref _helpLabelSearchFolderColor, value); 
+        set => this.RaiseAndSetIfChanged(ref _helpLabelSearchFolderColor, value);
     }
 
     /// <summary>
@@ -41,7 +42,7 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
     /// </summary>
     public string HelpLabelSearchPath
     {
-        get => _helpLabelSearchPath; 
+        get => _helpLabelSearchPath;
         set => this.RaiseAndSetIfChanged(ref _helpLabelSearchPath, value);
     }
 
@@ -50,10 +51,10 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
     /// </summary>
     public string HelpLabelSearchFolder
     {
-        get => _helpLabelSearchFolder; 
+        get => _helpLabelSearchFolder;
         set => this.RaiseAndSetIfChanged(ref _helpLabelSearchFolder, value);
     }
-    
+
     /// <summary>
     /// Строка с расположением файлов с исходными данными
     /// </summary>
@@ -79,7 +80,7 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
             ValidateDirectory(_locationFolderSaveText);
         }
     }
-    
+
     /// <summary>
     /// Команда при нажатии на кнопку поиска пути (лупа)
     /// </summary>
@@ -99,10 +100,10 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
     /// Команда при нажатии на кнопку "Продолжить"
     /// </summary>
     public ReactiveCommand<Unit, Unit> ContinueActionCommand { get; }
-    
+
     private IImmutableSolidColorBrush _helpLabelSearchPathColor = null!;
     private IImmutableSolidColorBrush _helpLabelSearchFolderColor = null!;
-    
+
     private string _helpLabelSearchPath = null!;
     private string _helpLabelSearchFolder = null!;
 
@@ -124,7 +125,7 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
 
         HelpLabelSearchPath = "*такого файла не существует";
         HelpLabelSearchFolder = "*некорректно указана папка для создания";
-        
+
         HelpLabelSearchFolderColor = Brushes.Red;
         HelpLabelSearchPathColor = Brushes.Red;
     }
