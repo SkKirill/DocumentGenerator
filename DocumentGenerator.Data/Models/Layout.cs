@@ -1,6 +1,8 @@
-﻿namespace DocumentGenerator.Data.Models;
+﻿using DocumentGenerator.Data.Models.DataBase;
 
-public class Layout
+namespace DocumentGenerator.Data.Models;
+
+public class Layout : BaseDatabaseModel
 {
-    
+    public string Name { get; set; }
 }
