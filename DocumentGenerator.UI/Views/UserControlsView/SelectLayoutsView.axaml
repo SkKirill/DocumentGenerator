@@ -41,7 +41,7 @@
                 BorderBrush="Black">
                 <ScrollViewer>
                     <ItemsControl
-                        ItemsSource="{Binding Items}">
+                        ItemsSource="{Binding Layouts}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid

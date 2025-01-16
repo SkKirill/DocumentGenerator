@@ -1,26 +1,26 @@
 using System;
-using DocumentGenerator.UI.ViewModels;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.Models;
 
-public class ListItemModel : ReactiveObject
+public class ListLayoutsModel : ReactiveObject
 {
-    private bool _isChecked;
     public bool IsChecked
     {
         get => _isChecked;
         set => this.RaiseAndSetIfChanged(ref _isChecked, value);
     }
-    private string _text;
     public string Text
     {
         get => _text;
         set => this.RaiseAndSetIfChanged(ref _text, value);
     }
     public Action EditAction { get; set; }
+    
+    private string _text;
+    private bool _isChecked;
 
-    public ListItemModel(string text, Action editAction)
+    public ListLayoutsModel(string text, Action editAction)
     {
         Text = text;
         EditAction = editAction;

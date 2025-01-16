@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentGenerator.Core", "D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentGenerator.Data", "DocumentGenerator.Data\DocumentGenerator.Data.csproj", "{D741412D-67E6-4FE0-B035-F349C598CB35}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentGenerator.Core.Test", "DocumentGenerator.Core.Test\DocumentGenerator.Core.Test.csproj", "{935D5EFF-79DE-447B-B41A-0139DE729735}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{D741412D-67E6-4FE0-B035-F349C598CB35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D741412D-67E6-4FE0-B035-F349C598CB35}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D741412D-67E6-4FE0-B035-F349C598CB35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{935D5EFF-79DE-447B-B41A-0139DE729735}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{935D5EFF-79DE-447B-B41A-0139DE729735}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{935D5EFF-79DE-447B-B41A-0139DE729735}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{935D5EFF-79DE-447B-B41A-0139DE729735}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
