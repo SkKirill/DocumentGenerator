@@ -91,6 +91,7 @@
                 </Button.Content>
             </Button>
             <Button
+                IsVisible="False"
                 CornerRadius="10"
                 HorizontalContentAlignment="Center"
                 Grid.Row="0" Grid.Column="1"

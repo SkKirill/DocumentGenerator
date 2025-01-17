@@ -8,67 +8,72 @@ using DocumentGenerator.Data.Services;
 using DocumentGenerator.Data.Services.DataBase.Repositories;
 using DocumentGenerator.UI.Models;
 using DocumentGenerator.UI.Services;
+using DynamicData;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
 
 public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
 {
-    public ObservableCollection<ListLayoutsModel> Layouts { get; set; }
-    public ReactiveCommand<ListLayoutsModel, Unit> EditItemCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> DoSomethingCommand { get; set; }
-    public IObservable<bool> CompleteView => _completeView;
-    public ReactiveCommand<Unit, Unit> ClearActionButton { get; }
+    public IObservable<UserControlTypes> RedirectToView => _redirectToView;
+    
+    public string NameEditLayout { get; set; }
+    /// <summary>
+    /// Список всех доступных к выбору макетов из базы данных
+    /// </summary>
+    public ObservableCollection<ListLayoutsModel> ListLayouts { get; set; }
+    public ReactiveCommand<Unit, Unit> GoBackActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
-    private readonly Subject<bool> _completeView;
+    private readonly Subject<UserControlTypes> _redirectToView;
+    private readonly List<IDisposable> _subscriptions;
 
     public SelectLayoutsViewModel()
     {
-        _completeView = new Subject<bool>();
-        ClearActionButton = ReactiveCommand.Create(RunClearAction);
+        _subscriptions = new List<IDisposable>();
+        _redirectToView = new Subject<UserControlTypes>();
+        GoBackActionButton = ReactiveCommand.Create(RunGoBackAction);
         ContinueButton = ReactiveCommand.Create(RunContinue);
-        Layouts = new();
+        ListLayouts = [];
 
         using var layoutRepository = new LayoutRepository();
         layoutRepository.UseContext(new DatabaseContext());
 
         var layouts = layoutRepository.GetLayoutsAsync().Result;
-
+        
         foreach (var layout in layouts)
         {
-            Layouts.Add(new ListLayoutsModel($"{layout.Name}", () => Console.WriteLine(layout.Name)));
+            var layoutListModel = new ListLayoutsModel($"{layout.Name}");
+            _subscriptions.Add(layoutListModel.NameEditLayout.Subscribe(EditItem));
+            ListLayouts.Add(layoutListModel);
         }
+    }
 
-        EditItemCommand = ReactiveCommand.Create<ListLayoutsModel>(EditItem);
-        DoSomethingCommand = ReactiveCommand.Create(DoSomethingWithCheckedItems);
+    private void EditItem(string name)
+    {
+        NameEditLayout = name;
+        _redirectToView.OnNext(UserControlTypes.Edit);
     }
 
     private void RunContinue()
     {
-        _completeView.OnNext(true);
-    }
-
-    private void RunClearAction()
-    {
-        _completeView.OnNext(false);
-    }
-
-    private static void EditItem(ListLayoutsModel layouts)
-    {
-        layouts.EditAction();
-    }
-
-    private IEnumerable<ListLayoutsModel> GetCheckedItems()
-    {
-        return Layouts.Where(item => item.IsChecked);
-    }
-
-    private void DoSomethingWithCheckedItems()
-    {
-        var checkedItems = GetCheckedItems();
-        foreach (var item in checkedItems)
+        if (ListLayouts.Any(item => item.IsChecked))
         {
-            Console.WriteLine(item.Text);
+           _redirectToView.OnNext(UserControlTypes.Process);
+           return; 
         }
+        // TODO: Сделать тостер, что пользователь не тыкнул ни в одну
+    }
+
+    private void RunGoBackAction()
+    {
+        _redirectToView.OnNext(UserControlTypes.Path);
+    }
+
+    public List<string> GetCheckedNames()
+    {
+        return ListLayouts
+            .Where(item => item.IsChecked)
+            .Select(item => item.NameLayout)
+            .ToList();
     }
 }

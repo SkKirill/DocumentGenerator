@@ -14,56 +14,65 @@
     MinHeight="340"
     MinWidth="800"
     x:Class="DocumentGenerator.UI.Views.UserControlsView.EditLayoutView">
-    
     <Grid
-        VerticalAlignment="Bottom"
-        Grid.Row="1" Grid.ColumnSpan="2"
-        ColumnDefinitions="*, *">
-        <Button
-            Grid.Column="0"
-            HorizontalAlignment="Stretch"
-            Margin="25,0,110, 0"
-            Command="{Binding ClearActionButton}"
-            Background="OrangeRed"
-            HorizontalContentAlignment="Center"
-            CornerRadius="10">
-            <Button.Content>
-                <StackPanel
-                    Orientation="Horizontal">
-                    <Image
-                        Width="36"
-                        Height="34"
-                        VerticalAlignment="Stretch"
-                        Margin="0,4,0,0"
-                        Source="../../Assets/Icons/left-arrow.ico">
-                    </Image>
-                    <TextBlock
-                        Text=" Вернуться">
-                    </TextBlock>
-                </StackPanel>
-            </Button.Content>
-        </Button>
-        <Button
-            CornerRadius="10"
-            HorizontalContentAlignment="Center"
-            Grid.Row="0" Grid.Column="1"
-            HorizontalAlignment="Stretch"
-            Margin="90,0,25, 0"
-            Background="LimeGreen"
-            Command="{Binding ContinueButton}">
-            <Button.Content>
-                <StackPanel
-                    Orientation="Horizontal">
-                    <TextBlock
-                        Text="Продолжить ">
-                    </TextBlock>
-                    <Image
-                        Width="35"
-                        Margin="0,4,0,0"
-                        Source="../../Assets/Icons/arrow-right.ico">
-                    </Image>
-                </StackPanel>
-            </Button.Content>
-        </Button>
-    </Grid>
+        RowDefinitions="*, *">
+        <TextBlock
+            Grid.Row="0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Text="{Binding NameLayout}">
+        </TextBlock>
+
+        <Grid
+            VerticalAlignment="Bottom"
+            Grid.Row="1" Grid.ColumnSpan="2"
+            ColumnDefinitions="*, *">
+            <Button
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                Margin="25,0,110, 0"
+                Command="{Binding ClearActionButton}"
+                Background="OrangeRed"
+                HorizontalContentAlignment="Center"
+                CornerRadius="10">
+                <Button.Content>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <Image
+                            Width="36"
+                            Height="34"
+                            VerticalAlignment="Stretch"
+                            Margin="0,4,0,0"
+                            Source="../../Assets/Icons/left-arrow.ico">
+                        </Image>
+                        <TextBlock
+                            Text=" Вернуться">
+                        </TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button
+                CornerRadius="10"
+                HorizontalContentAlignment="Center"
+                Grid.Row="0" Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                Margin="90,0,25, 0"
+                Background="LimeGreen"
+                Command="{Binding ContinueButton}">
+                <Button.Content>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Text="Продолжить ">
+                        </TextBlock>
+                        <Image
+                            Width="35"
+                            Margin="0,4,0,0"
+                            Source="../../Assets/Icons/arrow-right.ico">
+                        </Image>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
+        </Grid>
 </UserControl>

@@ -17,7 +17,7 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
     /// <summary>
     /// Событие по переходу на следующую или предыдущую форму
     /// </summary>
-    public IObservable<bool> CompleteView => _completeView;
+    public IObservable<UserControlTypes> RedirectToView => _redirectToView;
 
     /// <summary>
     /// Цвет строки подсказки под полем ввода пути к файлу с данными
@@ -109,18 +109,18 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
 
     private string _locationDataText = null!;
     private string _locationFolderSaveText = null!;
-    private readonly Subject<bool> _completeView;
+    private readonly Subject<UserControlTypes> _redirectToView;
 
     [Obsolete("Obsolete")]
     public SelectPathsViewModel()
     {
-        _completeView = new Subject<bool>();
+        _redirectToView = new Subject<UserControlTypes>();
         LocationFolderSaveText = string.Empty;
         LocationDataText = string.Empty;
 
         OpenSearchPathCommand = ReactiveCommand.Create(RunSearchPath);
         OpenSearchFolderCommand = ReactiveCommand.Create(RunSearchFolder);
-        GoBackActionCommand = ReactiveCommand.Create(RunClearAction);
+        GoBackActionCommand = ReactiveCommand.Create(RunGoBackAction);
         ContinueActionCommand = ReactiveCommand.Create(RunContinue);
 
         HelpLabelSearchPath = "*такого файла не существует";
@@ -156,16 +156,17 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
 
         if (success)
         {
-            _completeView.OnNext(true);
+            _redirectToView.OnNext(UserControlTypes.Layouts);
         }
     }
 
     /// <summary>
     /// Обработка нажатия кнопки вернуться (после чего произойдет возврат на прошлую форму)
+    /// В случае с окном выбора путей эта кнопка недоступна и ничего не делает
     /// </summary>
-    private void RunClearAction()
+    private void RunGoBackAction()
     {
-        _completeView.OnNext(false);
+        _redirectToView.OnNext(UserControlTypes.Path);
     }
 
     /// <summary>

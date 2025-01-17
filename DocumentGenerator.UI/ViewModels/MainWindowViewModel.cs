@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DocumentGenerator.Core.Services;
 using DocumentGenerator.UI.Services;
 using DocumentGenerator.UI.ViewModels.UserControlsViewModel;
 using ReactiveUI;
@@ -18,78 +19,53 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private StartService _startService;
     private ViewModelBase _controlSelectPaths;
     private readonly List<IDisposable> _subscriptions;
-    private Dictionary<UserControlType, ViewModelBase> _viewModels;
+    private readonly Dictionary<UserControlTypes, ViewModelBase> _viewModels;
 
+    [Obsolete("Obsolete")]
     public MainWindowViewModel()
     {
+        _subscriptions = new List<IDisposable>();
         _viewModels = new()
         {
-            { UserControlType.Layouts, new SelectLayoutsViewModel() },
-            { UserControlType.Path, new SelectPathsViewModel() },
-            { UserControlType.Edit, new EditLayoutViewModel() },
-            { UserControlType.Process, new ProcessingViewModel() }
+            { UserControlTypes.Layouts, new SelectLayoutsViewModel() },
+            { UserControlTypes.Path, new SelectPathsViewModel() },
+            { UserControlTypes.Process, new ProcessingViewModel() }
         };
-        ControlSelectPaths = _viewModels[UserControlType.Path];
-        _subscriptions = new List<IDisposable>();
+        ControlSelectPaths = _viewModels[UserControlTypes.Path];
         foreach (var viewModel in _viewModels.Values)
         {
             if (viewModel is IUserControlsNotifier userControlsNotifier)
             {
-                _subscriptions.Add(userControlsNotifier.CompleteView.Subscribe(OnComplete));
+                _subscriptions.Add(userControlsNotifier.RedirectToView.Subscribe(OnComplete));
             }
         }
     }
 
-    private void OnComplete(bool success)
+    private void OnComplete(UserControlTypes success)
     {
-        if (success)
+        if (_viewModels[UserControlTypes.Layouts] is SelectLayoutsViewModel selectLayoutsViewModel)
         {
-            switch (ControlSelectPaths)
+            switch (success)
             {
-                case SelectPathsViewModel:
-                {
-                    ControlSelectPaths = _viewModels[UserControlType.Layouts];
+                case UserControlTypes.Edit:
+                    var editLayoutViewModel = new EditLayoutViewModel(selectLayoutsViewModel.NameEditLayout);
+                    if (editLayoutViewModel is IUserControlsNotifier userControlsNotifier)
+                    {
+                        _subscriptions.Add(userControlsNotifier.RedirectToView.Subscribe(OnComplete));
+                    }
+
+                    _viewModels[UserControlTypes.Edit] = editLayoutViewModel;
                     break;
-                }
-                case SelectLayoutsViewModel:
-                {
-                    ControlSelectPaths = _viewModels[UserControlType.Process];
+
+                case UserControlTypes.Process:
+                    _startService = new StartService(selectLayoutsViewModel.GetCheckedNames());
                     break;
-                }
-                case EditLayoutViewModel:
-                {
-                    ControlSelectPaths = _viewModels[UserControlType.Layouts];
-                    break;
-                }
-                case ProcessingViewModel:
-                {
-                    ControlSelectPaths = _viewModels[UserControlType.Edit];
-                    break;
-                }
             }
         }
-        else
-        {
-            switch (ControlSelectPaths)
-            {
-                case SelectLayoutsViewModel:
-                {
-                    ControlSelectPaths = _viewModels[UserControlType.Path];
-                    break;
-                }
-                case EditLayoutViewModel:
-                {
-                    ControlSelectPaths = _viewModels[UserControlType.Path];
-                    break;
-                }
-                case ProcessingViewModel:
-                {
-                    ControlSelectPaths = _viewModels[UserControlType.Layouts];
-                    break;
-                }
-            }
-        }
+
+        ControlSelectPaths = _viewModels[success];
     }
 }

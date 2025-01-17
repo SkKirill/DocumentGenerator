@@ -12,14 +12,14 @@ namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
 public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
 {
     public ObservableCollection<ListItemProcessingModel> ProcessingText { get; set; }
-    private Subject<bool> _completeView;
-    public IObservable<bool> CompleteView => _completeView;
+    private readonly Subject<UserControlTypes> _redirectToView;
+    public IObservable<UserControlTypes> RedirectToView => _redirectToView;
     public ReactiveCommand<Unit, Unit> ClearActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
     
     public ProcessingViewModel()
     {
-        _completeView = new Subject<bool>();
+        _redirectToView = new Subject<UserControlTypes>();
         ProcessingText = new ObservableCollection<ListItemProcessingModel>();
 
         ProcessingText.Add(new ListItemProcessingModel(Brushes.Red, "Диплом готов"));
@@ -33,19 +33,19 @@ public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
         ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Ошибка при создании"));
         ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Диплом готов"));
         
-        ClearActionButton = ReactiveCommand.Create(RunClearAction);
+        ClearActionButton = ReactiveCommand.Create(RunGoBackAction);
         ContinueButton = ReactiveCommand.Create(RunContinue);
     }
     
     private void RunContinue()
     {
-        _completeView.OnNext(true);
+        _redirectToView.OnNext(UserControlTypes.Process);
     }
 
-    private void RunClearAction()
+    private void RunGoBackAction()
     {
-        _completeView.OnNext(false);
-        // TODO: обработка нажатия в окошко поиска директории
+        // TODO: обработать завершение создание и возможное удаление того что уже создалось
+        _redirectToView.OnNext(UserControlTypes.Layouts);
     }
     
 }

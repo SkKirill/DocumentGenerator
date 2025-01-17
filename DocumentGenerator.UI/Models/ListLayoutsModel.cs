@@ -1,29 +1,42 @@
 using System;
+using System.Reactive;
+using System.Reactive.Subjects;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.Models;
 
 public class ListLayoutsModel : ReactiveObject
 {
+    public IObservable<string> NameEditLayout => _nameEditLayout;
     public bool IsChecked
     {
         get => _isChecked;
         set => this.RaiseAndSetIfChanged(ref _isChecked, value);
     }
-    public string Text
+
+    public string NameLayout
     {
-        get => _text;
-        set => this.RaiseAndSetIfChanged(ref _text, value);
+        get => _nameLayout;
+        set => this.RaiseAndSetIfChanged(ref _nameLayout, value);
     }
-    public Action EditAction { get; set; }
+
+    private readonly Subject<string> _nameEditLayout;
+    public ReactiveCommand<Unit, Unit> EditAction { get; }
     
-    private string _text;
+    private string _nameLayout;
     private bool _isChecked;
 
-    public ListLayoutsModel(string text, Action editAction)
+    public ListLayoutsModel(string nameLayout)
     {
-        Text = text;
-        EditAction = editAction;
+        NameLayout = nameLayout;
         IsChecked = false;
+        EditAction = ReactiveCommand.Create(EditActionCommand);
+        _nameEditLayout = new Subject<string>();
     }
+
+    private void EditActionCommand()
+    {
+        _nameEditLayout.OnNext(NameLayout);
+    }
+
 }

@@ -32,6 +32,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DocumentGenerator.Core\DocumentGenerator.Core.csproj" />
       <ProjectReference Include="..\DocumentGenerator.Data\DocumentGenerator.Data.csproj" />
     </ItemGroup>
 </Project>

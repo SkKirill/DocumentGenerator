@@ -1,6 +1,6 @@
 ﻿namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
 
-public enum UserControlType
+public enum UserControlTypes
 {
     Layouts,
     Path,

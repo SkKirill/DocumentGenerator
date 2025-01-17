@@ -8,27 +8,37 @@ namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
 
 public class EditLayoutViewModel : ViewModelBase, IUserControlsNotifier
 {
-    private Subject<bool> _completeView;
-    public IObservable<bool> CompleteView => _completeView;
+    private readonly Subject<UserControlTypes> _redirectToView;
+    public IObservable<UserControlTypes> RedirectToView => _redirectToView;
     public ReactiveCommand<Unit, Unit> ClearActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
-    
-    public EditLayoutViewModel()
+
+    public string NameLayout
     {
-        _completeView = new Subject<bool>();
+        get => _nameLayout;
+        set => this.RaiseAndSetIfChanged(ref _nameLayout, value);
+    }
+    
+    private string _nameLayout;
+    
+    public EditLayoutViewModel(string nameLayout)
+    {
+        NameLayout = nameLayout;
+        _redirectToView = new Subject<UserControlTypes>();
         ClearActionButton = ReactiveCommand.Create(RunClearAction);
         ContinueButton = ReactiveCommand.Create(RunContinue);
     }
     
     private void RunContinue()
     {
-        _completeView.OnNext(true);
+        // TODO: выполнить сохранение созданных макетов
+        _redirectToView.OnNext(UserControlTypes.Layouts);
     }
 
     private void RunClearAction()
     {
-        _completeView.OnNext(false);
-        // TODO: обработка нажатия в окошко поиска директории
+        // TODO: спросить сохранять или удалять выбранные макеты создания файлов
+        _redirectToView.OnNext(UserControlTypes.Layouts);
     }
 
 }

@@ -41,7 +41,7 @@
                 BorderBrush="Black">
                 <ScrollViewer>
                     <ItemsControl
-                        ItemsSource="{Binding Layouts}">
+                        ItemsSource="{Binding ListLayouts}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid
@@ -54,8 +54,37 @@
                                     <TextBlock
                                         Grid.Column="1"
                                         FontSize="24"
-                                        Text="{Binding Text}"
-                                        VerticalAlignment="Center" />
+                                        Text="{Binding NameLayout}"
+                                        VerticalAlignment="Center" 
+                                        HorizontalAlignment="Left"/>
+                                    <Button
+                                        Grid.Column="2"
+                                        Height="35"
+                                        Command="{Binding EditAction}"
+                                        BorderThickness="0"
+                                        Margin="4"
+                                        Padding="0">
+                                        <Button.Content>
+                                            <StackPanel
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Orientation="Horizontal">
+                                                <TextBlock
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    FontSize="18"
+                                                    Margin="8,0,0,6"
+                                                    Text="изменить">
+                                                </TextBlock>
+                                                <Image
+                                                    Margin="7"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Center"
+                                                    Source="../../Assets/Icons/pencil.ico">
+                                                </Image>
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -72,7 +101,7 @@
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 Margin="25,0,110, 0"
-                Command="{Binding ClearActionButton}"
+                Command="{Binding GoBackActionButton}"
                 Background="OrangeRed"
                 HorizontalContentAlignment="Center"
                 CornerRadius="10">
