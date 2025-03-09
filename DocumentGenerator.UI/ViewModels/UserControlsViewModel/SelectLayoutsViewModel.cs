@@ -38,11 +38,13 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
         using var layoutRepository = new LayoutRepository();
         layoutRepository.UseContext(new DatabaseContext());
 
-        var layouts = layoutRepository.GetLayoutsAsync().Result;
+        var layoutNames = layoutRepository.GetLayoutsAsync().Result
+            .Select(item => item.Name).ToList();
         
-        foreach (var layout in layouts)
+        layoutNames.Add("Пустой макет");
+        foreach (var name in layoutNames)
         {
-            var layoutListModel = new ListLayoutsModel($"{layout.Name}");
+            var layoutListModel = new ListLayoutsModel($"{name}");
             _subscriptions.Add(layoutListModel.NameEditLayout.Subscribe(EditItem));
             ListLayouts.Add(layoutListModel);
         }

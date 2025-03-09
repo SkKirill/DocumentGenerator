@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentGenerator.Core.Services;
 using DocumentGenerator.UI.Services;
 using DocumentGenerator.UI.ViewModels.UserControlsViewModel;
@@ -61,7 +62,9 @@ public class MainWindowViewModel : ViewModelBase
                     break;
 
                 case UserControlTypes.Process:
-                    _startService = new StartService(selectLayoutsViewModel.GetCheckedNames());
+                    var viewPath = _viewModels[UserControlTypes.Path] as SelectPathsViewModel;
+                    _startService = new StartService(selectLayoutsViewModel.GetCheckedNames(), 
+                        [viewPath.LocationDataText], viewPath.LocationFolderSaveText);
                     break;
             }
         }

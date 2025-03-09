@@ -1,11 +1,12 @@
 using System;
 using System.Reactive;
 using System.Reactive.Subjects;
+using DocumentGenerator.UI.Services;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.Models;
 
-public class ListLayoutsModel : ReactiveObject
+public class ListLayoutsModel : ReactiveObject, IEditLayoutStartNotifier
 {
     public IObservable<string> NameEditLayout => _nameEditLayout;
     public bool IsChecked
