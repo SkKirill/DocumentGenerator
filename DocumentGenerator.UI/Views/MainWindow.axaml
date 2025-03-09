@@ -16,10 +16,9 @@
     Title="Создание документов"
     FontFamily="{DynamicResource FuturaNewFontFamily}"
     TransparencyLevelHint="AcrylicBlur">
-    
+
     <ContentControl
-        Content="{Binding ControlSelectPaths}" 
-        HorizontalAlignment="Stretch" 
-        VerticalAlignment="Stretch"
-        />
+        Content="{Binding ControlSelectPaths}"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch" />
 </Window>

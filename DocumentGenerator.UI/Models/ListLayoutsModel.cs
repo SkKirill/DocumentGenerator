@@ -9,6 +9,7 @@ namespace DocumentGenerator.UI.Models;
 public class ListLayoutsModel : ReactiveObject, IEditLayoutStartNotifier
 {
     public IObservable<string> NameEditLayout => _nameEditLayout;
+
     public bool IsChecked
     {
         get => _isChecked;
@@ -23,7 +24,7 @@ public class ListLayoutsModel : ReactiveObject, IEditLayoutStartNotifier
 
     private readonly Subject<string> _nameEditLayout;
     public ReactiveCommand<Unit, Unit> EditAction { get; }
-    
+
     private string _nameLayout;
     private bool _isChecked;
 
@@ -39,5 +40,4 @@ public class ListLayoutsModel : ReactiveObject, IEditLayoutStartNotifier
     {
         _nameEditLayout.OnNext(NameLayout);
     }
-
 }

@@ -55,8 +55,8 @@
                                         Grid.Column="1"
                                         FontSize="24"
                                         Text="{Binding NameLayout}"
-                                        VerticalAlignment="Center" 
-                                        HorizontalAlignment="Left"/>
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Left" />
                                     <Button
                                         Grid.Column="2"
                                         Height="35"

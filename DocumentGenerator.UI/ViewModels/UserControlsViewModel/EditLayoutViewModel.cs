@@ -18,9 +18,9 @@ public class EditLayoutViewModel : ViewModelBase, IUserControlsNotifier
         get => _nameLayout;
         set => this.RaiseAndSetIfChanged(ref _nameLayout, value);
     }
-    
+
     private string _nameLayout;
-    
+
     public EditLayoutViewModel(string nameLayout)
     {
         NameLayout = nameLayout;
@@ -28,7 +28,7 @@ public class EditLayoutViewModel : ViewModelBase, IUserControlsNotifier
         ClearActionButton = ReactiveCommand.Create(RunClearAction);
         ContinueButton = ReactiveCommand.Create(RunContinue);
     }
-    
+
     private void RunContinue()
     {
         // TODO: выполнить сохранение созданных макетов
@@ -40,5 +40,4 @@ public class EditLayoutViewModel : ViewModelBase, IUserControlsNotifier
         // TODO: спросить сохранять или удалять выбранные макеты создания файлов
         _redirectToView.OnNext(UserControlTypes.Layouts);
     }
-
 }

@@ -16,12 +16,14 @@ namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
 public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
 {
     public IObservable<UserControlTypes> RedirectToView => _redirectToView;
-    
+
     public string NameEditLayout { get; set; }
+
     /// <summary>
     /// Список всех доступных к выбору макетов из базы данных
     /// </summary>
     public ObservableCollection<ListLayoutsModel> ListLayouts { get; set; }
+
     public ReactiveCommand<Unit, Unit> GoBackActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
     private readonly Subject<UserControlTypes> _redirectToView;
@@ -40,7 +42,7 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
 
         var layoutNames = layoutRepository.GetLayoutsAsync().Result
             .Select(item => item.Name).ToList();
-        
+
         layoutNames.Add("Пустой макет");
         foreach (var name in layoutNames)
         {
@@ -60,8 +62,8 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
     {
         if (ListLayouts.Any(item => item.IsChecked))
         {
-           _redirectToView.OnNext(UserControlTypes.Process);
-           return; 
+            _redirectToView.OnNext(UserControlTypes.Process);
+            return;
         }
         // TODO: Сделать тостер, что пользователь не тыкнул ни в одну
     }

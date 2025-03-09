@@ -7,13 +7,13 @@ public class ListItemProcessingModel : ReactiveObject
 {
     private IImmutableSolidColorBrush _color;
     private string _text;
-    
+
     public IImmutableSolidColorBrush Color
     {
         get => _color;
         set => this.RaiseAndSetIfChanged(ref _color, value);
     }
-    
+
     public string Text
     {
         get => _text;
@@ -24,5 +24,5 @@ public class ListItemProcessingModel : ReactiveObject
     {
         _color = color;
         _text = text;
-    }    
+    }
 }

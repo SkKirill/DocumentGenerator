@@ -13,7 +13,7 @@
         <FluentTheme>
         </FluentTheme>
     </Application.Styles>
-    
+
     <Application.Resources>
         <FontFamily
             x:Key="FuturaNewFontFamily">

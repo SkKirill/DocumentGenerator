@@ -33,7 +33,7 @@ public abstract class BaseModelRepository<TModel> : IDisposable
         DatabaseContext.SaveChanges();
         return model;
     }
-    
+
     /// <summary>
     /// Update or create specified model 
     /// </summary>

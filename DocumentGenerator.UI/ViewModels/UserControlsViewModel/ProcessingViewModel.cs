@@ -16,7 +16,7 @@ public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
     public IObservable<UserControlTypes> RedirectToView => _redirectToView;
     public ReactiveCommand<Unit, Unit> ClearActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
-    
+
     public ProcessingViewModel()
     {
         _redirectToView = new Subject<UserControlTypes>();
@@ -32,11 +32,11 @@ public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
         ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Ошибка при создании"));
         ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Ошибка при создании"));
         ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Диплом готов"));
-        
+
         ClearActionButton = ReactiveCommand.Create(RunGoBackAction);
         ContinueButton = ReactiveCommand.Create(RunContinue);
     }
-    
+
     private void RunContinue()
     {
         _redirectToView.OnNext(UserControlTypes.Process);
@@ -47,5 +47,4 @@ public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
         // TODO: обработать завершение создание и возможное удаление того что уже создалось
         _redirectToView.OnNext(UserControlTypes.Layouts);
     }
-    
 }
