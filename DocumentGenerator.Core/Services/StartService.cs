@@ -9,7 +9,7 @@ public class StartService
     public List<string> SourceNames { get; set; }
     public string FolderTo { get; set; }
 
-    public StartService(List<string> nameLayouts, List<string> sourceNames, string folderTo)
+    public StartService(List<string> nameLayouts, List<string> sourceNames, string folderTo, string referenses)
     {
         _headers = new Dictionary<string, string>();
         SourceNames = sourceNames;
@@ -19,7 +19,7 @@ public class StartService
 
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-        foreach (var path in sourceNames)
+        /*foreach (var path in sourceNames)
         {
             using var package = new ExcelPackage(new FileInfo(path));
 
@@ -35,13 +35,15 @@ public class StartService
                     }
                 }
             }
-        }
+        }*/
 
         Console.WriteLine("Starting document generator.");
         foreach (var item in NameLayouts)
         {
             Console.WriteLine(item);
         }
+
+        CreateDoc.CreateAllDoc( referenses, sourceNames.First(), folderTo);
     }
 
     public void ChangeNameLayout(List<string> name)

@@ -5,16 +5,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.UserControlsViewModel"
     mc:Ignorable="d"
-    d:DesignWidth="800"
-    d:DesignHeight="340"
     x:DataType="vm:SelectPathsViewModel"
     FontSize="30"
-    Width="800"
-    Height="340"
-    MaxWidth="800"
-    MaxHeight="340"
-    MinHeight="340"
-    MinWidth="800"
     x:Class="DocumentGenerator.UI.Views.UserControlsView.SelectPathsView">
 
     <StackPanel
@@ -60,6 +52,35 @@
                 FontSize="18"
                 Text="{Binding HelpLabelSearchPath}"
                 Foreground="{Binding HelpLabelSearchPathColor}" />
+            <Grid
+                ColumnDefinitions="10*, 1*"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+                <TextBox
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    CornerRadius="10"
+                    Watermark="путь к словарю..."
+                    Margin="1, 2"
+                    Text="{Binding LocationDictionaryDataText}" />
+                <Button
+                    Grid.Column="1"
+                    CornerRadius="10"
+                    Margin="1, 2"
+                    HorizontalAlignment="Stretch"
+                    Width="60"
+                    Command="{Binding OpenSearchDictionatyPathCommand}">
+                    <Image
+                        Margin="5,5,5,5"
+                        Source="../../Assets/Icons/magnifier.ico">
+                    </Image>
+                </Button>
+            </Grid>
+            <TextBlock
+                HorizontalAlignment="Stretch"
+                FontSize="18"
+                Text="{Binding HelpLabelSearchDictionaryPath}"
+                Foreground="{Binding HelpLabelSearchDictionaryPathColor}" />
         </StackPanel>
 
         <StackPanel

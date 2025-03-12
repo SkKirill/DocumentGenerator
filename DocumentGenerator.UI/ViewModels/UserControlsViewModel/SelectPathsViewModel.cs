@@ -27,6 +27,12 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
         get => _helpLabelSearchPathColor;
         set => this.RaiseAndSetIfChanged(ref _helpLabelSearchPathColor, value);
     }
+    
+    public IImmutableSolidColorBrush HelpLabelSearchDictionaryPathColor
+    {
+        get => _helpLabelSearchDictionaryPathColor;
+        set => this.RaiseAndSetIfChanged(ref _helpLabelSearchDictionaryPathColor, value);
+    }
 
     /// <summary>
     /// Цвет строки подсказки под полем ввода папки для сохранения файлов
@@ -44,6 +50,11 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
     {
         get => _helpLabelSearchPath;
         set => this.RaiseAndSetIfChanged(ref _helpLabelSearchPath, value);
+    }
+    public string HelpLabelSearchDictionaryPath
+    {
+        get => _helpLabelSearchDictionaryPath;
+        set => this.RaiseAndSetIfChanged(ref _helpLabelSearchDictionaryPath, value);
     }
 
     /// <summary>
@@ -67,6 +78,16 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
             ValidatePath(_locationDataText);
         }
     }
+    
+    public string LocationDictionaryDataText
+    {
+        get => _locationDictionaryDataText;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _locationDictionaryDataText, value);
+            ValidatePath(_locationDictionaryDataText);
+        }
+    }
 
     /// <summary>
     /// Строка с указанием папки для сохранения файлов
@@ -84,7 +105,8 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
     /// <summary>
     /// Команда при нажатии на кнопку поиска пути (лупа)
     /// </summary>
-    public ReactiveCommand<Unit, Task> OpenSearchPathCommand { get; }
+    public ReactiveCommand<Unit, Task> OpenSearchPathCommand { get; } 
+    public ReactiveCommand<Unit, Task> OpenSearchDictionatyPathCommand { get; }
 
     /// <summary>
     /// Команда при нажатии на кнопку поиска папки (лупа)
@@ -102,12 +124,15 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
     public ReactiveCommand<Unit, Unit> ContinueActionCommand { get; }
 
     private IImmutableSolidColorBrush _helpLabelSearchPathColor = null!;
+    private IImmutableSolidColorBrush _helpLabelSearchDictionaryPathColor = null!;
     private IImmutableSolidColorBrush _helpLabelSearchFolderColor = null!;
 
     private string _helpLabelSearchPath = null!;
+    private string _helpLabelSearchDictionaryPath = null!;
     private string _helpLabelSearchFolder = null!;
 
     private string _locationDataText = null!;
+    private string _locationDictionaryDataText = null!;
     private string _locationFolderSaveText = null!;
     private readonly Subject<UserControlTypes> _redirectToView;
 
@@ -117,13 +142,16 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
         _redirectToView = new Subject<UserControlTypes>();
         LocationFolderSaveText = string.Empty;
         LocationDataText = string.Empty;
+        LocationDictionaryDataText = string.Empty;
 
         OpenSearchPathCommand = ReactiveCommand.Create(RunSearchPath);
+        OpenSearchDictionatyPathCommand = ReactiveCommand.Create(RunSearchDictionaryPath);
         OpenSearchFolderCommand = ReactiveCommand.Create(RunSearchFolder);
         GoBackActionCommand = ReactiveCommand.Create(RunGoBackAction);
         ContinueActionCommand = ReactiveCommand.Create(RunContinue);
 
         HelpLabelSearchPath = "*такого файла не существует";
+        HelpLabelSearchDictionaryPath = "*такого файла не существует";
         HelpLabelSearchFolder = "*некорректно указана папка для создания";
 
         HelpLabelSearchFolderColor = Brushes.Red;
@@ -235,6 +263,40 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
             ValidatePath(LocationDataText);
         }
     }
+    private async Task RunSearchDictionaryPath()
+    {
+        var openFileDialog = new OpenFileDialog()
+        {
+            AllowMultiple = false,
+            Filters =
+            [
+                new FileDialogFilter
+                {
+                    Name = "Базы данных и Excel",
+                    Extensions = { "xlsx", "xls", "db", "sqlite", "mdb", "accdb" }
+                }
+            ]
+        };
+
+        if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            var window = desktop.MainWindow;
+            if (window == null)
+            {
+                HelpLabelSearchPath = "*не удалось открыть диалоговое окно";
+                HelpLabelSearchPathColor = Brushes.Red;
+                return;
+            }
+
+            var result = await openFileDialog.ShowAsync(window);
+            if (result is { Length: > 0 })
+            {
+                LocationDictionaryDataText = result[0];
+            }
+
+            ValidateDictionaryPath(LocationDictionaryDataText);
+        }
+    }
 
     /// <summary>
     /// Проверка на существование пути к файлу с данными
@@ -259,6 +321,26 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
 
         HelpLabelSearchPath = "*неверно указан путь к файлу";
         HelpLabelSearchPathColor = Brushes.Red;
+        return false;
+    }
+    private bool ValidateDictionaryPath(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            HelpLabelSearchDictionaryPath = "*путь не указан";
+            HelpLabelSearchDictionaryPathColor = Brushes.Red;
+            return false;
+        }
+
+        if (File.Exists(path))
+        {
+            HelpLabelSearchDictionaryPath = "*файл найден";
+            HelpLabelSearchDictionaryPathColor = Brushes.Green;
+            return true;
+        }
+
+        HelpLabelSearchDictionaryPath = "*неверно указан путь к файлу";
+        HelpLabelSearchDictionaryPathColor = Brushes.Red;
         return false;
     }
 
