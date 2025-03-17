@@ -1,30 +1,43 @@
-﻿using OfficeOpenXml;
+﻿using System.Reactive.Subjects;
+using OfficeOpenXml;
 
 namespace DocumentGenerator.Core.Services;
 
-public static class CreateDoc
+public class CreateDoc
 {
     public static DateTime dateTime;
+    private static ISubject<string> _messageSubject;
 
     public static void CreateAllDoc(string FilePathReference, string filePathIn, string foldelPathOut,
+        ref ISubject<string> messageSubject,
         string substrateFilePath = "")
     {
+        _messageSubject = messageSubject;
         dateTime = DateTime.Now;
 
         if (CreateDictionaryReference(out Dictionary<string, ReferenceMaterialDictionary> references,
                 ref FilePathReference) &&
-            CreateListForDiploms(out List<PlayersListStruct> players, ref filePathIn) &&
             CreateDictionaryCity(out Dictionary<string, string> cities, ref filePathIn))
         {
             /*WordDiplomSertificat doc = new WordDiplomSertificat(FilePathReference, filePathIn, foldelPathOut, players, cities, references, substrateFilePath);
             */
             // Создаем необходимые документы
-            CreateEnd(filePathIn, foldelPathOut, references);
-            CreateCityes(foldelPathOut, players, cities);
-            CreateModer(foldelPathOut, players, references);
 
-            Console.WriteLine($"Всего {players.Count} строк обработано.\n" +
-                              $"Программа выполнена за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
+            _messageSubject.OnNext("Файлы прочитаны, начало создания!");
+
+            CreateListForDiplomsOffline(out List<PlayersListStruct> playersOnline, ref filePathIn);
+            CreateCityes(foldelPathOut, playersOnline, cities, "города-очно");
+            CreateModerOffline(foldelPathOut, playersOnline, references);
+
+
+            CreateListForDiplomsOnline(out List<PlayersListStruct> players, ref filePathIn);
+            CreateCityes(foldelPathOut, players, cities);
+            CreateModerOnline(foldelPathOut, players, references);
+
+            /*CreateEnd(filePathIn, foldelPathOut, references);*/
+
+            _messageSubject.OnNext($"Всего {players.Count} строк обработано.\n" +
+                                   $"Программа выполнена за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
         }
     }
 
@@ -141,13 +154,13 @@ public static class CreateDoc
                         }
                     }
 
-                    Console.WriteLine(
+                    _messageSubject.OnNext(
                         $"Прочитан файл {kvp.Value.TypeCompetition}, код {kvp.Key}. Всего участников посетило -> {countTyt - 2}");
                 }
             }
             else
             {
-                Console.WriteLine($"Файл к {kvp.Value.TypeCompetition} - {kvp.Key} -> не найден");
+                _messageSubject.OnNext($"Файл к {kvp.Value.TypeCompetition} - {kvp.Key} -> не найден");
             }
         }
 
@@ -163,12 +176,16 @@ public static class CreateDoc
         File.WriteAllBytes(resultsFilePath, package.GetAsByteArray());
         File.WriteAllBytes(participantsFilePath, tytPackage.GetAsByteArray());
 
-        Console.WriteLine($"Файлы успешно созданы: {resultsFilePath} и {participantsFilePath}");
+        _messageSubject.OnNext($"Файлы успешно созданы: {resultsFilePath} и {participantsFilePath}");
     }
 
     public static void CreateCityes(string foldelPathOut,
-        List<PlayersListStruct> playerList, Dictionary<string, string> citiesDic)
+        List<PlayersListStruct> playerList, Dictionary<string, string> citiesDic, string whereLine = "города-дист")
     {
+        playerList.Sort((item, second) =>
+            string.Compare(item.FioPlayers, second.FioPlayers, StringComparison.Ordinal));
+
+
         Dictionary<string, HashSet<string>> schools = new Dictionary<string, HashSet<string>>();
 
         foreach (var kvpair in citiesDic)
@@ -190,7 +207,7 @@ public static class CreateDoc
         {
             foreach (var currentSchool in schools[kvpair.Key])
             {
-                Console.WriteLine($"Создание файла городу: {kvpair.Key}");
+                _messageSubject.OnNext($"Создание файла городу: {kvpair.Key}");
 
                 using var package = new ExcelPackage();
                 var worksheet = package.Workbook.Worksheets.Add("Лист первичной регистрации");
@@ -198,7 +215,7 @@ public static class CreateDoc
                 // Объединяем ячейки A1-J1
                 worksheet.Cells["A1:J1"].Merge = true;
                 worksheet.Cells["A1"].Value =
-                    "X Межрегиональный открытый фестиваль научно-технического творчества «РОБОАРТ-2024»";
+                    "XI Межрегиональный открытый фестиваль научно-технического творчества «РОБОАРТ-2025»";
                 worksheet.Cells["A1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                 worksheet.Cells["A1"].Style.Font.Bold = true;
 
@@ -220,26 +237,45 @@ public static class CreateDoc
                 worksheet.Cells["A4"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
                 // Заголовки таблицы
+                worksheet.Cells["A6:A7"].Merge = true;
+                worksheet.Cells["A6:A7"].Style.WrapText = true;
                 worksheet.Cells["A6"].Value = "№ П/П";
+                
                 worksheet.Cells["B6:B7"].Merge = true;
+                worksheet.Cells["B6:B7"].Style.WrapText = true;
                 worksheet.Cells["B6"].Value = "Фамилия, Имя, Отчество участника";
+                
                 worksheet.Cells["C6:C7"].Merge = true;
                 worksheet.Cells["C6"].Value = "Фамилия, Имя, Отчество руководителя команды";
+                worksheet.Cells["C6"].Style.WrapText = true;
+                
                 worksheet.Cells["D6:D7"].Merge = true;
                 worksheet.Cells["D6"].Value = "Согласие на обработку персональных данных участника";
+                worksheet.Cells["D6"].Style.WrapText = true;
+                
                 worksheet.Cells["E6:E7"].Merge = true;
                 worksheet.Cells["E6"].Value = "Согласие на обработку персональных данных руководителя";
+                worksheet.Cells["E6"].Style.WrapText = true;
+                
                 worksheet.Cells["F6:F7"].Merge = true;
                 worksheet.Cells["F6"].Value = "Приказ или расписка ответственности";
+                worksheet.Cells["F6"].Style.WrapText = true;
+                
                 worksheet.Cells["G6:H6"].Merge = true;
                 worksheet.Cells["G6"].Value = "Талоны на питание";
+                worksheet.Cells["G6"].Style.WrapText = true;
+                
                 worksheet.Cells["G7"].Value = "обед";
                 worksheet.Cells["H7"].Value = "завтрак";
+                
                 worksheet.Cells["I6:I7"].Merge = true;
                 worksheet.Cells["I6"].Value = "Значки";
+                worksheet.Cells["I6"].Style.WrapText = true;
+                
                 worksheet.Cells["J6:J7"].Merge = true;
                 worksheet.Cells["J6"].Value = "Подпись педагога";
-
+                worksheet.Cells["J6"].Style.WrapText = true;
+                
                 // Форматирование границ
                 for (int col = 1; col <= 10; col++)
                 {
@@ -260,8 +296,8 @@ public static class CreateDoc
                         worksheet.Cells[row, 1].Value = row - 7;
                         worksheet.Cells[row, 2].Value = people.FioPlayers;
                         worksheet.Cells[row, 3].Value = people.TeacherPlayers;
-                        worksheet.Cells[row, 4].Value = "1"; // Согласие на обработку данных участника
-                        worksheet.Cells[row, 5].Value = "1"; // Согласие на обработку данных руководителя
+                        worksheet.Cells[row, 4].Value = ""; // Согласие на обработку данных участника
+                        worksheet.Cells[row, 5].Value = ""; // Согласие на обработку данных руководителя
                         worksheet.Cells[row, 6].Value = ""; // Приказ или расписка ответственности
                         worksheet.Cells[row, 7].Value = "1"; // Талоны на питание (обед)
                         worksheet.Cells[row, 8].Value = "1"; // Талоны на питание (завтрак)
@@ -277,56 +313,94 @@ public static class CreateDoc
                         row++;
                     }
                 }
-
+                
+                worksheet.Cells[row, 2].Value = "Руководитель команды";
+                worksheet.Cells[row, 7].Value = "1"; // Количество обедов
+                worksheet.Cells[row, 8].Value = "1"; // Количество завтраков
+                
+                row += 1;
+                
                 // Итоговая строка
                 worksheet.Cells[row, 2].Value = "Итого";
                 worksheet.Cells[row, 2].Style.Font.Bold = true;
                 worksheet.Cells[row, 7].Value = row - 8; // Количество обедов
+                worksheet.Cells[row, 7].Style.Font.Bold = true;
                 worksheet.Cells[row, 8].Value = row - 8; // Количество завтраков
+                worksheet.Cells[row, 8].Style.Font.Bold = true;
 
+                row += 1;
+                
                 for (int col = 1; col <= 10; col++)
                 {
                     worksheet.Cells[row, col].BorderOutline();
+                    worksheet.Cells[row-1, col].BorderOutline();
+                    worksheet.Cells[row-2, col].BorderOutline();
                 }
 
                 row += 2;
 
                 worksheet.Cells[row, 2].Value = "Сведения заполнил";
                 worksheet.Cells[$"C{row}:E{row}"].Merge = true;
-                worksheet.Cells[$"C{row}"].Value = "ФИО";
+                worksheet.Cells[$"C{row}:E{row}"].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                worksheet.Cells[$"C{row + 1}:E{row + 1}"].Merge = true;
+                worksheet.Cells[$"C{row + 1}"].Value = "ФИО";
                 worksheet.Cells[$"C{row}"].Style.HorizontalAlignment =
                     OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells[$"C{row + 1}"].Style.HorizontalAlignment =
+                    OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                 worksheet.Cells[$"I{row}:J{row}"].Merge = true;
-                worksheet.Cells[$"I{row}"].Value = "Подпись";
+                worksheet.Cells[$"I{row}:J{row}"].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                worksheet.Cells[$"I{row + 1}:J{row + 1}"].Merge = true;
+                worksheet.Cells[$"I{row + 1}"].Value = "Подпись";
+                worksheet.Cells[$"I{row + 1}"].Style.HorizontalAlignment =
+                    OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                 worksheet.Cells[$"I{row}"].Style.HorizontalAlignment =
                     OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
+                worksheet.Column(1).Width = 7;
+                worksheet.Column(2).Width = 33;
+                worksheet.Column(3).Width = 33;
+                worksheet.Column(4).Width = 22;
+                worksheet.Column(5).Width = 22;
+                worksheet.Column(6).Width = 16;
+                worksheet.Column(7).Width = 7;
+                worksheet.Column(8).Width = 7;
+                worksheet.Column(9).Width = 7;
+                worksheet.Column(10).Width = 17;
+
+                worksheet.Rows[6].Height = 28.8;
+
                 // Сохраняем файл
-                if (!Directory.Exists(Path.Combine(foldelPathOut, "Города-дистант")))
+                if (!Directory.Exists(Path.Combine(foldelPathOut, whereLine)))
                 {
-                    Directory.CreateDirectory(Path.Combine(foldelPathOut, "Города-дистант"));
+                    Directory.CreateDirectory(Path.Combine(foldelPathOut, whereLine));
                 }
 
-                var cityFileName = Path.Combine(foldelPathOut, "Города-дистант",
-                    $"{kvpair.Key.Replace(@"\", "").Replace("\"", "")} {currentSchool.Replace(@"\", "").Replace("\"", "")}.xlsx");
+                var cityFileName = Path.Combine(foldelPathOut, whereLine,
+                        $"{kvpair.Key.Replace(@"\", "").Replace("\"", "")} {currentSchool.Replace("\n", "").Replace(@"\", "").Replace("\"", "")}.xlsx")
+                    .Replace("/", "");
+
                 File.WriteAllBytes(cityFileName, package.GetAsByteArray());
 
-                Console.WriteLine($"Создан файл: {kvpair.Value} -> {row - 8} участников");
+                _messageSubject.OnNext($"Создан файл: {kvpair.Value} -> {row - 8} участников");
                 k += row - 8;
             }
         }
 
-        Console.WriteLine($"Всего: {k} участников");
+        _messageSubject.OnNext($"Всего: {k} участников");
     }
 
-    public static void CreateModer(string foldelPathOut, List<PlayersListStruct> playerList,
+    public static void CreateModerOnline(string foldelPathOut, List<PlayersListStruct> playerList,
         Dictionary<string, ReferenceMaterialDictionary> referencesDic)
     {
+        playerList.Sort((item, second) =>
+            string.Compare(item.NameCommand, second.NameCommand, StringComparison.Ordinal));
+
         int k = 0;
 
         foreach (var kvpair in referencesDic)
         {
-            Console.WriteLine(
+            _messageSubject.OnNext(
                 $"Создание для модераторов файла: {kvpair.Value.TypeCompetition} {kvpair.Value.NameCompetition}");
 
             using var package = new ExcelPackage();
@@ -335,7 +409,7 @@ public static class CreateDoc
             // Заголовки
             worksheet.Cells["A1:I1"].Merge = true;
             worksheet.Cells["A1"].Value =
-                "X Межрегиональный открытый фестиваль научно-технического творчества «РОБОАРТ-2024»";
+                "XI Межрегиональный открытый фестиваль научно-технического творчества «РОБОАРТ-2025»";
             worksheet.Cells["A1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
             worksheet.Cells["A1"].Style.Font.Bold = true;
 
@@ -368,7 +442,7 @@ public static class CreateDoc
                 worksheet.Cells[$"{(char)('A' + col - 1)}6"].BorderOutline();
             }
 
-            int row = 7;
+            int row = 6;
 
             foreach (var people in playerList)
             {
@@ -396,22 +470,141 @@ public static class CreateDoc
                 }
             }
 
+            worksheet.Column(1).Width = 6;
+            worksheet.Column(2).Width = 17.5;
+            worksheet.Column(3).Width = 33;
+            worksheet.Column(4).Width = 14;
+            worksheet.Column(5).Width = 25;
+            worksheet.Column(6).Width = 33;
+            worksheet.Column(7).Width = 16.5;
+            worksheet.Column(8).Width = 18.5;
+            worksheet.Column(9).Width = 30;
+
             // Сохраняем файл
-            if (!Directory.Exists(Path.Combine(foldelPathOut, "модерам-дистант")))
+            if (!Directory.Exists(Path.Combine(foldelPathOut, "модерам-дист")))
             {
-                Directory.CreateDirectory(Path.Combine(foldelPathOut, "модерам-дистант"));
+                Directory.CreateDirectory(Path.Combine(foldelPathOut, "модерам-дист"));
             }
 
-            var moderFileName = Path.Combine(foldelPathOut, "модерам-дистант",
+            var moderFileName = Path.Combine(foldelPathOut, "модерам-дист",
                 $"{kvpair.Key.Replace(@"\", "").Replace("\"", "")}.xlsx");
             File.WriteAllBytes(moderFileName, package.GetAsByteArray());
 
-            Console.WriteLine(
+            _messageSubject.OnNext(
                 $"Создан файл: {kvpair.Value.TypeCompetition} {kvpair.Value.NameCompetition} -> {row - 6} участников");
             k += row - 6;
         }
 
-        Console.WriteLine($"Всего: {k} участников");
+        _messageSubject.OnNext($"Всего: {k} участников");
+    }
+
+    public static void CreateModerOffline(string foldelPathOut, List<PlayersListStruct> playerList,
+        Dictionary<string, ReferenceMaterialDictionary> referencesDic)
+    {
+        playerList.Sort((item, second) =>
+            string.Compare(item.NameCommand, second.NameCommand, StringComparison.Ordinal));
+
+
+        int k = 0;
+
+        foreach (var kvpair in referencesDic)
+        {
+            _messageSubject.OnNext(
+                $"Создание для модераторов файла: {kvpair.Value.TypeCompetition} {kvpair.Value.NameCompetition}");
+
+            using var package = new ExcelPackage();
+            var worksheet = package.Workbook.Worksheets.Add("Список участников");
+
+            // Заголовки
+            worksheet.Cells["A1:I1"].Merge = true;
+            worksheet.Cells["A1"].Value =
+                "XI Межрегиональный открытый фестиваль научно-технического творчества «РОБОАРТ-2025»";
+            worksheet.Cells["A1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+            worksheet.Cells["A1"].Style.Font.Bold = true;
+
+            worksheet.Cells["A2:I2"].Merge = true;
+            worksheet.Cells["A2"].Value = "Список участников";
+            worksheet.Cells["A2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+            worksheet.Cells["A3:I3"].Merge = true;
+            worksheet.Cells["A3"].Value =
+                $"{kvpair.Value.TypeCompetition} {kvpair.Value.NameCompetition}, код {kvpair.Key}";
+            worksheet.Cells["A3"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+            worksheet.Cells["A4:I4"].Merge = true;
+            worksheet.Cells["A4"].Value = kvpair.Value.AgeRank;
+            worksheet.Cells["A4"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+            // Колонки таблицы
+            worksheet.Cells["A6"].Value = "№ П/П";
+            worksheet.Cells["B6"].Value = "Название команды";
+            worksheet.Cells["C6"].Value = "ФИО участника";
+            worksheet.Cells["D6"].Value = "Дата рождения";
+            worksheet.Cells["E6"].Value = "Учебное заведение";
+            worksheet.Cells["F6"].Value = "ФИО руководителя";
+            worksheet.Cells["G6"].Value = "Населенный пункт";
+            worksheet.Cells["H6"].Value = "Отметка о прибытии";
+            worksheet.Cells["I6"].Value = "e-mail";
+
+            for (int col = 1; col <= 9; col++)
+            {
+                worksheet.Cells[$"{(char)('A' + col - 1)}6"].BorderOutline();
+            }
+
+            int row = 6;
+
+            foreach (var people in playerList)
+            {
+                if ((people.CodeContest?.Contains(kvpair.Key) ?? false) ||
+                    (people.CodeCompetition?.Contains(kvpair.Key) ?? false) ||
+                    (people.CodeExhibition?.Contains(kvpair.Key) ?? false) ||
+                    (people.OlympicsContest?.Contains(kvpair.Key) ?? false))
+                {
+                    row++;
+
+                    worksheet.Cells[row, 1].Value = row - 6; // № П/П
+                    worksheet.Cells[row, 2].Value = people.NameCommand; // Название команды
+                    worksheet.Cells[row, 3].Value = people.FioPlayers; // ФИО участника
+                    worksheet.Cells[row, 4].Value = people.BirthdayPlayers.ToShortDateString(); // Дата рождения
+                    worksheet.Cells[row, 5].Value = people.SchoolPlayers; // Учебное заведение
+                    worksheet.Cells[row, 6].Value = people.TeacherPlayers; // ФИО руководителя
+                    worksheet.Cells[row, 7].Value = people.CityPlayers; // Населенный пункт
+                    worksheet.Cells[row, 8].Value = ""; // Отметка о прибытии
+                    worksheet.Cells[row, 9].Value = people.EMail; // e-mail
+
+                    for (int col = 1; col <= 9; col++)
+                    {
+                        worksheet.Cells[row, col].BorderOutline();
+                    }
+                }
+            }
+
+            worksheet.Column(1).Width = 6;
+            worksheet.Column(2).Width = 17.5;
+            worksheet.Column(3).Width = 33;
+            worksheet.Column(4).Width = 14;
+            worksheet.Column(5).Width = 25;
+            worksheet.Column(6).Width = 33;
+            worksheet.Column(7).Width = 16.5;
+            worksheet.Column(8).Width = 18.5;
+            worksheet.Column(9).Width = 30;
+
+            // Сохраняем файл
+            if (!Directory.Exists(Path.Combine(foldelPathOut, "модерам-очно")))
+            {
+                Directory.CreateDirectory(Path.Combine(foldelPathOut, "модерам-очно"));
+            }
+
+            var moderFileName = Path.Combine(foldelPathOut, "модерам-очно",
+                $"{kvpair.Key.Replace(@"\", "").Replace("\"", "")}.xlsx");
+            File.WriteAllBytes(moderFileName, package.GetAsByteArray());
+
+            _messageSubject.OnNext(
+                $"Создан файл: {kvpair.Value.TypeCompetition} {kvpair.Value.NameCompetition} -> {row - 6} участников");
+            k += row - 6;
+        }
+
+        _messageSubject.OnNext($"Всего: {k} участников");
     }
 
     public static bool CreateDictionaryCity(out Dictionary<string, string> dictionary, ref string filePath)
@@ -421,24 +614,26 @@ public static class CreateDoc
         try
         {
             using var package = new ExcelPackage(new FileInfo(filePath));
-            var excelTable = package.Workbook.Worksheets["Населенные_пункты"];
+            var excelTable = package.Workbook.Worksheets["Населенные пункты"];
             dictionary = new Dictionary<string, string>();
 
             for (int i = 1; i <= excelTable.Dimension.Rows; i++)
             {
                 if (excelTable.Cells[i, 2]?.Value != null && excelTable.Cells[i, 3]?.Value != null)
                 {
-                    dictionary.Add(excelTable.Cells[i, 2].Value.ToString(), excelTable.Cells[i, 3].Value.ToString());
+                    dictionary.Add(
+                        excelTable.Cells[i, 2].Value.ToString(),
+                        excelTable.Cells[i, 3].Value.ToString());
                 }
             }
 
-            Console.WriteLine(
+            _messageSubject.OnNext(
                 $"Успешное чтение файла с городами: {filePath} за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
             return true;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Произошла ошибка с файлом: {filePath}\nОшибка: {e.Message}");
+            _messageSubject.OnNext($"Произошла ошибка с файлом: {filePath}\nОшибка: {e.Message}");
         }
 
         return false;
@@ -455,7 +650,7 @@ public static class CreateDoc
             var excelTable = package.Workbook.Worksheets.First();
             dictionary = new Dictionary<string, ReferenceMaterialDictionary>();
 
-            for (int i = 1; i <= excelTable.Dimension.Rows; i++)
+            for (int i = 2; i <= excelTable.Dimension.Rows; i++)
             {
                 if (excelTable.Cells[i, 1]?.Value != null &&
                     excelTable.Cells[i, 2]?.Value != null &&
@@ -472,25 +667,26 @@ public static class CreateDoc
                 }
             }
 
-            Console.WriteLine($"Успешное чтение файла: {filePath} за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
+            _messageSubject.OnNext(
+                $"Успешное чтение файла: {filePath} за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
             return true;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Произошла ошибка с файлом: {filePath}\nОшибка: {e.Message}");
+            _messageSubject.OnNext($"Произошла ошибка с файлом: {filePath}\nОшибка: {e.Message}");
         }
 
         return false;
     }
 
-    public static bool CreateListForDiploms(out List<PlayersListStruct> list, ref string filePath)
+    public static bool CreateListForDiplomsOffline(out List<PlayersListStruct> list, ref string filePath)
     {
         list = null;
 
         try
         {
             using var package = new ExcelPackage(new FileInfo(filePath));
-            var excelTable = package.Workbook.Worksheets.First();
+            var excelTable = package.Workbook.Worksheets["Очно"];
             list = new List<PlayersListStruct>();
 
             for (int i = 2; i <= excelTable.Dimension.Rows; i++)
@@ -502,38 +698,76 @@ public static class CreateDoc
                         CodeCompetition = excelTable.Cells[i, 13]?.Value?.ToString(),
                         CodeExhibition = excelTable.Cells[i, 14]?.Value?.ToString(),
                         CodeContest = excelTable.Cells[i, 15]?.Value?.ToString(),
-                        OlympicsContest = excelTable.Cells[i, 16]?.Value?.ToString(),
+                        OlympicsContest = null /*excelTable.Cells[i, 15]?.Value?.ToString()*/,
                         FioPlayers = excelTable.Cells[i, 4]?.Value?.ToString(),
                         BirthdayPlayers = excelTable.Cells[i, 5]?.Value != null
-                            ? Convert.ToDateTime(excelTable.Cells[i, 5].Value)
-                            : default(DateTime),
+                            ? DateTime.FromOADate((double)excelTable.Cells[i, 5].Value)
+                            : default,
                         SchoolPlayers = excelTable.Cells[i, 12]?.Value?.ToString(),
                         CityPlayers = excelTable.Cells[i, 11]?.Value?.ToString(),
-                        TeacherPlayers = excelTable.Cells[i, 19]?.Value?.ToString(),
-                        IsMen = excelTable.Cells[i, 22]?.Value?.ToString() == "М",
+                        TeacherPlayers = excelTable.Cells[i, 18]?.Value?.ToString(),
+                        IsMen = excelTable.Cells[i, 21]?.Value?.ToString() == "М",
                         NameCommand = excelTable.Cells[i, 8]?.Value?.ToString(),
-                        EMail = excelTable.Cells[i, 21]?.Value?.ToString()
+                        EMail = excelTable.Cells[i, 20]?.Value?.ToString()
                     });
                 }
             }
 
-            Console.WriteLine($"Успешное чтение файла: {filePath} за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
+            _messageSubject.OnNext(
+                $"Успешное чтение файла: {filePath} за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
             return true;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Произошла ошибка с файлом: {filePath}\nОшибка: {e.Message}");
+            _messageSubject.OnNext($"Произошла ошибка с файлом: {filePath}\nОшибка: {e.Message}");
         }
 
         return false;
     }
 
-    public static ExcelRange BorderOutline(this ExcelRange range)
+    public static bool CreateListForDiplomsOnline(out List<PlayersListStruct> list, ref string filePath)
     {
-        range.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-        range.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-        range.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-        range.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-        return range;
+        list = null;
+
+        try
+        {
+            using var package = new ExcelPackage(new FileInfo(filePath));
+            var excelTable = package.Workbook.Worksheets["Дистанционно"];
+            list = new List<PlayersListStruct>();
+
+            for (int i = 2; i <= excelTable.Dimension.Rows; i++)
+            {
+                if (excelTable.Cells[i, 4]?.Value != null)
+                {
+                    list.Add(new PlayersListStruct
+                    {
+                        CodeCompetition = excelTable.Cells[i, 12]?.Value?.ToString(),
+                        CodeExhibition = excelTable.Cells[i, 13]?.Value?.ToString(),
+                        CodeContest = excelTable.Cells[i, 14]?.Value?.ToString(),
+                        OlympicsContest = excelTable.Cells[i, 15]?.Value?.ToString(),
+                        FioPlayers = excelTable.Cells[i, 3]?.Value?.ToString(),
+                        BirthdayPlayers = excelTable.Cells[i, 4]?.Value != null
+                            ? DateTime.FromOADate((double)excelTable.Cells[i, 4].Value)
+                            : default,
+                        SchoolPlayers = excelTable.Cells[i, 11]?.Value?.ToString(),
+                        CityPlayers = excelTable.Cells[i, 10]?.Value?.ToString(),
+                        TeacherPlayers = excelTable.Cells[i, 18]?.Value?.ToString(),
+                        IsMen = excelTable.Cells[i, 21]?.Value?.ToString() == "М",
+                        NameCommand = excelTable.Cells[i, 7]?.Value?.ToString(),
+                        EMail = excelTable.Cells[i, 20]?.Value?.ToString()
+                    });
+                }
+            }
+
+            _messageSubject.OnNext(
+                $"Успешное чтение файла: {filePath} за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
+            return true;
+        }
+        catch (Exception e)
+        {
+            _messageSubject.OnNext($"Произошла ошибка с файлом: {filePath}\nОшибка: {e.Message}");
+        }
+
+        return false;
     }
 }

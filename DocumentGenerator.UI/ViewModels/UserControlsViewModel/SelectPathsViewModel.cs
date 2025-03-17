@@ -239,7 +239,7 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
                 new FileDialogFilter
                 {
                     Name = "Базы данных и Excel",
-                    Extensions = { "xlsx", "xls", "db", "sqlite", "mdb", "accdb" }
+                    Extensions = { "xlsx", "xls", "ods", "db", "sqlite", "mdb", "accdb" }
                 }
             ]
         };
@@ -273,7 +273,7 @@ public class SelectPathsViewModel : ViewModelBase, IUserControlsNotifier
                 new FileDialogFilter
                 {
                     Name = "Базы данных и Excel",
-                    Extensions = { "xlsx", "xls", "db", "sqlite", "mdb", "accdb" }
+                    Extensions = { "xlsx", "xls", "db", "ods", "sqlite", "mdb", "accdb" }
                 }
             ]
         };

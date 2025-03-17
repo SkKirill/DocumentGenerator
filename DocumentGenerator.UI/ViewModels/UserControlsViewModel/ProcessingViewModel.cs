@@ -21,18 +21,6 @@ public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
     {
         _redirectToView = new Subject<UserControlTypes>();
         ProcessingText = new ObservableCollection<ListItemProcessingModel>();
-
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Red, "Диплом готов"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Пример готов"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Red, "Сертификат готов"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Ошибка при создании"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Red, "Сертификат не готов"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Red, "Сертификат не готов"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Red, "Сертификат не готов"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Ошибка при создании"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Ошибка при создании"));
-        ProcessingText.Add(new ListItemProcessingModel(Brushes.Green, "Диплом готов"));
-
         ClearActionButton = ReactiveCommand.Create(RunGoBackAction);
         ContinueButton = ReactiveCommand.Create(RunContinue);
     }
@@ -46,5 +34,10 @@ public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
     {
         // TODO: обработать завершение создание и возможное удаление того что уже создалось
         _redirectToView.OnNext(UserControlTypes.Layouts);
+    }
+
+    public void AddProcessingText(ListItemProcessingModel processingText)
+    {
+        ProcessingText.Add(processingText);
     }
 }
