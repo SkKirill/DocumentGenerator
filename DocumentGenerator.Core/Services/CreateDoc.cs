@@ -19,13 +19,13 @@ public class CreateDoc
                 ref FilePathReference) &&
             CreateDictionaryCity(out Dictionary<string, string> cities, ref filePathIn))
         {
-            /*WordDiplomSertificat doc = new WordDiplomSertificat(FilePathReference, filePathIn, foldelPathOut, players, cities, references, substrateFilePath);
-            */
-            // Создаем необходимые документы
-
-            _messageSubject.OnNext("Файлы прочитаны, начало создания!");
-
             CreateListForDiplomsOffline(out List<PlayersListStruct> playersOnline, ref filePathIn);
+            WordDiplomSertificat doc = new WordDiplomSertificat(FilePathReference, filePathIn, foldelPathOut, playersOnline, cities, references, substrateFilePath);
+            doc.CreateDiploms();
+            doc.CreateCertificate();
+            doc.CreateCertificateWithBacking();
+            
+            /*_messageSubject.OnNext("Файлы прочитаны, начало создания!");
             CreateCityes(foldelPathOut, playersOnline, cities, "города-очно");
             CreateModerOffline(foldelPathOut, playersOnline, references);
 
@@ -34,9 +34,10 @@ public class CreateDoc
             CreateCityes(foldelPathOut, players, cities);
             CreateModerOnline(foldelPathOut, players, references);
 
-            /*CreateEnd(filePathIn, foldelPathOut, references);*/
+            CreateEnd(filePathIn, foldelPathOut, references); // todo: проверить
+            */
 
-            _messageSubject.OnNext($"Всего {players.Count} строк обработано.\n" +
+            _messageSubject.OnNext($"Всего {playersOnline.Count} строк обработано.\n" +
                                    $"Программа выполнена за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
         }
     }

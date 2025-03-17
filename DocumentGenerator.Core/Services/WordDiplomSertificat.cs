@@ -1,7 +1,10 @@
 ﻿using System.Drawing;
-using Spire.Doc;
-using Spire.Doc.Documents;
-using Spire.Doc.Fields;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Xceed.Words.NET;
+using Xceed.Document.NET;
+using Xceed.Words.NET;
 using static System.String;
 
 namespace DocumentGenerator.Core.Services;
@@ -44,7 +47,7 @@ public struct PlayersListStruct
     }
 }
 
-class WordDiplomSertificat
+public class WordDiplomSertificat
 {
     private const string Competition = "в {0} «{1}»,";
     private const string Olimpic = "в {0} {1},";
@@ -53,15 +56,15 @@ class WordDiplomSertificat
     private const string BirthdaySchool = "{0} {1} {2}";
     private const string Teacher = "Педагог: {0}";
 
-    private delegate void DiplomCreationDelegate(DiplomStruct diplom, string savePath);
+    private delegate void DiplomCreationDelegate(DiplomStruct diplom, string savePath, string substrateFilePath = null);
 
     private string _filePathReference;
     private string _filePathIn;
     private readonly string _foldelPathOut;
-    private readonly string _substrateFilePath;
     private readonly List<PlayersListStruct> _playerList;
     private readonly Dictionary<string, string> _citiesDic;
     private readonly Dictionary<string, ReferenceMaterialDictionary> _referencesDic;
+    private readonly string _substrateFilePath;
 
     public WordDiplomSertificat(string filePathReference, string filePathIn, string foldelPathOut,
         List<PlayersListStruct> playerList, Dictionary<string, string> citiesDic, Dictionary<string,
@@ -78,269 +81,28 @@ class WordDiplomSertificat
 
     public bool CreateCertificateWithBacking()
     {
-        return CreateWord(CreateSertificatWithBacking, "сертификаты с подложкой-очно");
+        return CreateWord(CreateSertificatWithBacking, "сертификаты с подложкой-очно", _substrateFilePath);
     }
 
     public bool CreateCertificate()
     {
-        return CreateWord(CreateSertificat, "сертификаты-дист");
+        return CreateWord(CreateSertificatWithBacking, "сертификаты-дист", null);
     }
 
     public bool CreateDiploms()
     {
-        return CreateWord(CreateDiplom, "дипломы-дист");
+        return CreateWord(CreateDiplom, "дипломы-дист", null);
     }
 
-    private void CreateParagraph(ref Document document, string text,
-        float spaceBefore, float spaceAfter)
-    {
-        Section section = document.Sections[0]; // Или получите нужную секцию
-        Paragraph paragraph = section.AddParagraph();
-
-        TextRange textRange = paragraph.AppendText(text.Trim().Length == 0 ? " " : text.Trim());
-
-        // Форматирование текста
-        textRange.CharacterFormat.FontSize = 16;
-        textRange.CharacterFormat.FontName = "Calibri";
-
-        // Форматирование параграфа
-        paragraph.Format.BeforeSpacing = spaceBefore;
-        paragraph.Format.AfterSpacing = spaceAfter;
-        paragraph.Format.HorizontalAlignment = HorizontalAlignment.Center;
-    }
-
-    private void CreateDiplom(DiplomStruct diplom, string savePath)
-    {
-        // Создаем новый документ
-        Document doc = new Document();
-        Section section = doc.AddSection();
-
-        // Используем ранее определенный метод CreateParagraph (с исправленным кодом)
-        CreateParagraph(ref doc, diplom.Competition, 360f, 0f);
-
-        CreateParagraph(ref doc, "возрастная категория", 6f, 0f);
-        CreateParagraph(ref doc, diplom.Age.Substring(20), 0f, 0f);
-
-        CreateParagraph(ref doc, diplom.Fio, 60f, 12f);
-        // Форматирование FIO (параграф 4)
-        Paragraph fioParagraph = section.Paragraphs[3]; // Индексация с 0
-        if (fioParagraph.ChildObjects.Count > 0 && fioParagraph.ChildObjects[0] is TextRange)
-        {
-            TextRange fioTextRange = (TextRange)fioParagraph.ChildObjects[0];
-            fioTextRange.CharacterFormat.FontSize = 26;
-            fioTextRange.CharacterFormat.Bold = true;
-        }
-
-        CreateParagraph(ref doc, diplom.Birthday, 6f, 0f);
-        CreateParagraph(ref doc, diplom.City, 0f, 8f);
-
-        CreateParagraph(ref doc, diplom.Teacher, 18f, 8f);
-        // Форматирование city (параграф 6)
-        Paragraph cityParagraph = section.Paragraphs[5]; // Индексация с 0
-        if (cityParagraph.ChildObjects.Count > 0 && cityParagraph.ChildObjects[0] is TextRange)
-        {
-            TextRange cityTextRange = (TextRange)cityParagraph.ChildObjects[0];
-            cityTextRange.CharacterFormat.FontSize = 15;
-        }
-
-        // Устанавливаем нулевые поля (margin)
-        doc.Sections[0].PageSetup.Margins.Top = 0;
-        doc.Sections[0].PageSetup.Margins.Left = 0;
-        doc.Sections[0].PageSetup.Margins.Right = 0;
-        doc.Sections[0].PageSetup.Margins.Bottom = 0;
-
-        // Сохраняем документ
-        doc.SaveToFile(savePath, FileFormat.Docx); // Или другой желаемый формат
-    }
-
-    private void CreateSertificat(DiplomStruct diplom, string savePath)
-    {
-        // Создаем новый документ
-        Document doc = new Document();
-        Section section = doc.AddSection();
-
-        // Используем ранее определенный метод CreateParagraph (с исправленным кодом)
-        CreateParagraph(ref doc, diplom.Fio, 283f, 4f);
-        Paragraph fioParagraph = section.Paragraphs[0]; // Индексация с 0
-
-        if (fioParagraph.ChildObjects.Count > 0 && fioParagraph.ChildObjects[0] is TextRange)
-        {
-            TextRange fioTextRange = (TextRange)fioParagraph.ChildObjects[0];
-            fioTextRange.CharacterFormat.FontSize = 26;
-            fioTextRange.CharacterFormat.Bold = true;
-        }
-
-        if (diplom.City.Length >= 44)
-        {
-            CreateParagraph(ref doc, diplom.Birthday, 0f, 0f);
-            string first = "";
-            string[] words = diplom.City.Split(' ');
-            int i = 0;
-            while (words.Length > i && (first + words[i]).Length < 45)
-            {
-                first += words[i] + " ";
-                i++;
-            }
-
-            string last = "";
-            for (int k = i; words.Length > k; k++)
-                last += words[k] + " ";
-
-            CreateParagraph(ref doc, first, 0f, 0f);
-            CreateParagraph(ref doc, last, 0f, 0f);
-
-            CreateParagraph(ref doc, diplom.Competition, 120f, 8f);
-            CreateParagraph(ref doc, diplom.Age, 0f, 8f);
-            CreateParagraph(ref doc, diplom.Teacher, 36f, 8f);
-
-            Paragraph teacherParagraph = section.Paragraphs[6];
-            if (teacherParagraph.ChildObjects.Count > 0 && teacherParagraph.ChildObjects[0] is TextRange)
-            {
-                TextRange teacherTextRange = (TextRange)teacherParagraph.ChildObjects[0];
-                teacherTextRange.CharacterFormat.FontSize = 15;
-            }
-        }
-        else
-        {
-            CreateParagraph(ref doc, diplom.Birthday, 0f, 8f);
-            CreateParagraph(ref doc, diplom.City, 0f, 8f);
-            CreateParagraph(ref doc, diplom.Competition, 120f, 8f);
-            CreateParagraph(ref doc, diplom.Age, 0f, 8f);
-            CreateParagraph(ref doc, diplom.Teacher, 36f, 8f);
-            Paragraph teacherParagraph = section.Paragraphs[5];
-            if (teacherParagraph.ChildObjects.Count > 0 && teacherParagraph.ChildObjects[0] is TextRange)
-            {
-                TextRange teacherTextRange = (TextRange)teacherParagraph.ChildObjects[0];
-                teacherTextRange.CharacterFormat.FontSize = 15;
-            }
-        }
-
-        // Устанавливаем нулевые поля (margin)
-        doc.Sections[0].PageSetup.Margins.Top = 0;
-        doc.Sections[0].PageSetup.Margins.Left = 0;
-        doc.Sections[0].PageSetup.Margins.Right = 0;
-        doc.Sections[0].PageSetup.Margins.Bottom = 0;
-
-        // Сохраняем документ
-        doc.SaveToFile(savePath, FileFormat.Docx); // Или другой желаемый формат
-    }
-
-    private void CreateSertificatWithBacking(DiplomStruct diplom, string savePath)
-    {
-        // Создаем новый документ
-        var doc = new Document();
-        var section = doc.AddSection();
-
-        // Добавляем изображение подложки
-        try
-        {
-            // Load the image
-            var image = Image.FromFile(_substrateFilePath);
-
-            // Check if the image was loaded successfully
-            if (image != null)
-            {
-                // Set page size to the same size of the image
-                doc.Sections[0].PageSetup.PageSize = doc.Sections[0].PageSetup.PageSize with { Width = image.Width };
-                doc.Sections[0].PageSetup.PageSize =
-                    doc.Sections[0].PageSetup.PageSize with { Height = image.Height };
-
-                // Create Picture Watermark
-                PictureWatermark pictureWatermark = new PictureWatermark();
-                pictureWatermark.Picture = image;
-                pictureWatermark.Scaling = 100; // Adjust scaling if needed
-                pictureWatermark.IsWashout = false; // Set to false if you don't want the watermark to be faded
-
-                // Apply the picture watermark to the document, not the section
-                doc.Watermark = pictureWatermark;
-            }
-            else
-            {
-                Console.WriteLine("Error: Could not load the background image.");
-                return; // Exit the method if there's an error with the background
-            }
-
-            // Set margins to zero
-            doc.Sections[0].PageSetup.Margins.Top = 0;
-            doc.Sections[0].PageSetup.Margins.Bottom = 0;
-            doc.Sections[0].PageSetup.Margins.Left = 0;
-            doc.Sections[0].PageSetup.Margins.Right = 0;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error adding background image: {ex.Message}");
-            // Handle the exception (e.g., log it, show an error message)
-            return; // Exit the method if there's an error with the background
-        }
-
-        // Используем ранее определенный метод CreateParagraph (с исправленным кодом)
-        CreateParagraph(ref doc, diplom.Fio, 283f, 4f);
-        Paragraph fioParagraph = section.Paragraphs[0];
-
-        if (fioParagraph.ChildObjects.Count > 0 && fioParagraph.ChildObjects[0] is TextRange)
-        {
-            TextRange fioTextRange = (TextRange)fioParagraph.ChildObjects[0];
-            fioTextRange.CharacterFormat.FontSize = 26;
-            fioTextRange.CharacterFormat.Bold = true;
-        }
-
-        if (diplom.City.Length >= 44)
-        {
-            CreateParagraph(ref doc, diplom.Birthday, 0f, 0f);
-            string first = "";
-            string[] words = diplom.City.Split(' ');
-            int i = 0;
-            while (words.Length > i && (first + words[i]).Length < 45)
-            {
-                first += words[i] + " ";
-                i++;
-            }
-
-            string last = "";
-            for (int k = i; words.Length > k; k++)
-                last += words[k] + " ";
-
-            CreateParagraph(ref doc, first, 0f, 0f);
-            CreateParagraph(ref doc, last, 0f, 0f);
-
-            CreateParagraph(ref doc, diplom.Competition, 120f, 8f);
-            CreateParagraph(ref doc, diplom.Age, 0f, 8f);
-            CreateParagraph(ref doc, diplom.Teacher, 36f, 8f);
-            Paragraph teacherParagraph = section.Paragraphs[6];
-            if (teacherParagraph.ChildObjects.Count > 0 && teacherParagraph.ChildObjects[0] is TextRange)
-            {
-                TextRange teacherTextRange = (TextRange)teacherParagraph.ChildObjects[0];
-                teacherTextRange.CharacterFormat.FontSize = 15;
-            }
-        }
-        else
-        {
-            CreateParagraph(ref doc, diplom.Birthday, 0f, 8f);
-            CreateParagraph(ref doc, diplom.City, 0f, 8f);
-            CreateParagraph(ref doc, diplom.Competition, 120f, 8f);
-            CreateParagraph(ref doc, diplom.Age, 0f, 8f);
-            CreateParagraph(ref doc, diplom.Teacher, 36f, 8f);
-            Paragraph teacherParagraph = section.Paragraphs[5];
-            if (teacherParagraph.ChildObjects.Count > 0 && teacherParagraph.ChildObjects[0] is TextRange)
-            {
-                TextRange teacherTextRange = (TextRange)teacherParagraph.ChildObjects[0];
-                teacherTextRange.CharacterFormat.FontSize = 15;
-            }
-        }
-
-        // Сохраняем документ
-        doc.SaveToFile(savePath, FileFormat.Docx); // Или другой желаемый формат
-    }
-
-    private bool CreateWord(DiplomCreationDelegate creationDelegate, string folderMain)
+    private bool CreateWord(DiplomCreationDelegate creationDelegate, string folderMain, string substrateFilePath = null)
     {
         var diplomStruct = new DiplomStruct();
         try
         {
             var i = 0;
-            var people = _playerList[i];
             while (i < _playerList.Count)
             {
+                var people = _playerList[i];
                 Console.WriteLine(i.ToString().PadRight(4, ' ') + " | " + people.ToString().PadRight(50, ' ') + " | " +
                                   folderMain);
                 if ((!IsNullOrEmpty(people.CodeCompetition) && !people.CodeCompetition.Contains("не участвую"))
@@ -411,7 +173,7 @@ class WordDiplomSertificat
                         diplomStruct.Competition = Format(Olimpic, "олимпиаде",
                             _referencesDic[people.OlympicsContest].NameCompetition);
                         diplomStruct.Age = Format(Age, _referencesDic[people.OlympicsContest].AgeRank);
-                        creationDelegate(diplomStruct, currentPath + people.OlympicsContest);
+                        creationDelegate(diplomStruct, currentPath + people.OlympicsContest, substrateFilePath);
                     }
                 }
 
@@ -426,5 +188,115 @@ class WordDiplomSertificat
         }
 
         return false;
+    }
+
+    public void CreateDiplom(DiplomStruct diplom, string savePath, string _ = null)
+    {
+        // Создаем новый документ
+        using (DocX document = DocX.Create(savePath + ".docx"))
+        {
+            // Добавляем параграфы
+            AddParagraph(document, diplom.Competition, 360f, 0f, 16, "Calibri", true);
+            AddParagraph(document, "возрастная категория", 6f, 0f, 16, "Calibri", true);
+            AddParagraph(document, diplom.Age.Substring(20), 0f, 0f, 16, "Calibri", true);
+
+            // ФИО участника
+            var fioParagraph = AddParagraph(document, diplom.Fio, 60f, 12f, 26, "Calibri", true);
+            fioParagraph.Bold();
+
+            AddParagraph(document, diplom.Birthday, 6f, 0f, 16, "Calibri", true);
+            AddParagraph(document, diplom.City, 0f, 8f, 15, "Calibri", true);
+            AddParagraph(document, diplom.Teacher, 18f, 8f, 15, "Calibri", true);
+
+            // Устанавливаем нулевые поля (margin)
+            document.MarginTop = 0;
+            document.MarginBottom = 0;
+            document.MarginLeft = 0;
+            document.MarginRight = 0;
+
+            // Сохраняем документ
+            document.Save();
+        }
+    }
+
+    private Paragraph AddParagraph(DocX document, string text, float spaceBefore, float spaceAfter,
+        int fontSize, string fontName, bool isCentered)
+    {
+        var paragraph = document.InsertParagraph(text);
+        paragraph.Font(fontName).FontSize(fontSize);
+
+        if (isCentered)
+        {
+            paragraph.Alignment = Alignment.center;
+        }
+
+        // Установка отступов (если требуется)
+        paragraph.SpacingBefore(spaceBefore);
+        paragraph.SpacingAfter(spaceAfter);
+
+        return paragraph;
+    }
+
+    public void CreateSertificatWithBacking(DiplomStruct diplom, string savePath, string substrateFilePath = null)
+    {
+        using (DocX document = DocX.Create(savePath + ".docx"))
+        {
+            try
+            {
+                // Добавляем изображение подложки
+                var image = document.AddImage(substrateFilePath);
+                var picture = image.CreatePicture();
+                document.InsertParagraph("").InsertPicture(picture);
+
+                // Добавляем параграфы
+                var fioParagraph = AddParagraph(document, diplom.Fio, 283f, 4f, 26, "Calibri", true);
+                fioParagraph.Bold();
+
+                if (diplom.City.Length >= 44)
+                {
+                    AddParagraph(document, diplom.Birthday, 0f, 0f, 16, "Calibri", true);
+
+                    string first = "";
+                    string[] words = diplom.City.Split(' ');
+                    int i = 0;
+                    while (words.Length > i && (first + words[i]).Length < 45)
+                    {
+                        first += words[i] + " ";
+                        i++;
+                    }
+
+                    string last = "";
+                    for (int k = i; words.Length > k; k++)
+                        last += words[k] + " ";
+
+                    AddParagraph(document, first, 0f, 0f, 16, "Calibri", true);
+                    AddParagraph(document, last, 0f, 0f, 16, "Calibri", true);
+                    AddParagraph(document, diplom.Competition, 120f, 8f, 16, "Calibri", true);
+                    AddParagraph(document, diplom.Age, 0f, 8f, 16, "Calibri", true);
+                    AddParagraph(document, diplom.Teacher, 36f, 8f, 15, "Calibri", true);
+                }
+                else
+                {
+                    AddParagraph(document, diplom.Birthday, 0f, 8f, 16, "Calibri", true);
+                    AddParagraph(document, diplom.City, 0f, 8f, 16, "Calibri", true);
+                    AddParagraph(document, diplom.Competition, 120f, 8f, 16, "Calibri", true);
+                    AddParagraph(document, diplom.Age, 0f, 8f, 16, "Calibri", true);
+                    AddParagraph(document, diplom.Teacher, 36f, 8f, 15, "Calibri", true);
+                }
+
+                // Устанавливаем нулевые поля (margin)
+                document.MarginTop = 0;
+                document.MarginBottom = 0;
+                document.MarginLeft = 0;
+                document.MarginRight = 0;
+
+                // Сохраняем документ
+                document.Save();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при добавлении фонового изображения: {ex.Message}");
+            }
+        }
     }
 }
