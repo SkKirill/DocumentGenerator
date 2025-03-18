@@ -68,7 +68,7 @@ public class MainWindowViewModel : ViewModelBase
                 case UserControlTypes.Process:
                     var viewPath = _viewModels[UserControlTypes.Path] as SelectPathsViewModel;
                     _startService = new StartService(selectLayoutsViewModel.GetCheckedNames(),
-                        [viewPath.LocationDataText], viewPath.LocationFolderSaveText, viewPath.LocationDictionaryDataText);
+                        [viewPath.LocationDataText], viewPath.LocationFolderSaveText, viewPath.LocationDictionaryDataText, viewPath.LocationImageText);
                     _subscriptions.Add(_startService.Message.Subscribe(NextMessage));
                     _startService.Start();
                     break;

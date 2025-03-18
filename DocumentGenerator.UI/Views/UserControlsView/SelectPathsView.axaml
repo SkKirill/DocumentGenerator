@@ -81,6 +81,37 @@
                 FontSize="18"
                 Text="{Binding HelpLabelSearchDictionaryPath}"
                 Foreground="{Binding HelpLabelSearchDictionaryPathColor}" />
+            
+            
+            <Grid
+                ColumnDefinitions="10*, 1*"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+                <TextBox
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    CornerRadius="10"
+                    Watermark="путь к подложке..."
+                    Margin="1, 2"
+                    Text="{Binding LocationImageText}" />
+                <Button
+                    Grid.Column="1"
+                    CornerRadius="10"
+                    Margin="1, 2"
+                    HorizontalAlignment="Stretch"
+                    Width="60"
+                    Command="{Binding OpenSearchImageCommand}">
+                    <Image
+                        Margin="5,5,5,5"
+                        Source="../../Assets/Icons/magnifier.ico">
+                    </Image>
+                </Button>
+            </Grid>
+            <TextBlock
+                HorizontalAlignment="Stretch"
+                FontSize="18"
+                Text="{Binding HelpLabelSearchImage}"
+                Foreground="{Binding HelpLabelSearchImageColor}" />
         </StackPanel>
 
         <StackPanel

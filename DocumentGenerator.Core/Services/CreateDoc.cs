@@ -9,8 +9,7 @@ public class CreateDoc
     private static ISubject<string> _messageSubject;
 
     public static void CreateAllDoc(string FilePathReference, string filePathIn, string foldelPathOut,
-        ref ISubject<string> messageSubject,
-        string substrateFilePath = "")
+        ref ISubject<string> messageSubject, string substrateFilePath)
     {
         _messageSubject = messageSubject;
         dateTime = DateTime.Now;
@@ -20,10 +19,11 @@ public class CreateDoc
             CreateDictionaryCity(out Dictionary<string, string> cities, ref filePathIn))
         {
             CreateListForDiplomsOffline(out List<PlayersListStruct> playersOnline, ref filePathIn);
-            WordDiplomSertificat doc = new WordDiplomSertificat(FilePathReference, filePathIn, foldelPathOut, playersOnline, cities, references, substrateFilePath);
+            WordDiplomSertificat doc = new WordDiplomSertificat(FilePathReference, 
+                filePathIn, foldelPathOut, playersOnline, cities, references, substrateFilePath);
+            doc.CreateCertificateWithBacking();
             doc.CreateDiploms();
             doc.CreateCertificate();
-            doc.CreateCertificateWithBacking();
             
             /*_messageSubject.OnNext("Файлы прочитаны, начало создания!");
             CreateCityes(foldelPathOut, playersOnline, cities, "города-очно");
@@ -622,6 +622,12 @@ public class CreateDoc
             {
                 if (excelTable.Cells[i, 2]?.Value != null && excelTable.Cells[i, 3]?.Value != null)
                 {
+                    if (dictionary.ContainsKey(excelTable.Cells[i, 2].Value.ToString()))
+                    {
+                        _messageSubject.OnNext($"Ошибка: ключ {excelTable.Cells[i, 2].Value} в Населенных пунктах повторяется!");
+                        continue;
+                    }
+                    
                     dictionary.Add(
                         excelTable.Cells[i, 2].Value.ToString(),
                         excelTable.Cells[i, 3].Value.ToString());
@@ -658,6 +664,12 @@ public class CreateDoc
                     excelTable.Cells[i, 3]?.Value != null &&
                     excelTable.Cells[i, 4]?.Value != null)
                 {
+                    if (dictionary.ContainsKey(excelTable.Cells[i, 1].Value.ToString()))
+                    {
+                        _messageSubject.OnNext($"Ошибка: ключ {excelTable.Cells[i, 1].Value} повторяется!");
+                        continue;
+                    }
+                    
                     dictionary.Add(excelTable.Cells[i, 1].Value.ToString(),
                         new ReferenceMaterialDictionary
                         {
@@ -688,7 +700,7 @@ public class CreateDoc
         {
             using var package = new ExcelPackage(new FileInfo(filePath));
             var excelTable = package.Workbook.Worksheets["Очно"];
-            list = new List<PlayersListStruct>();
+            list = new List<PlayersListStruct>(); // не создавать каждый раз новый а чистить todo
 
             for (int i = 2; i <= excelTable.Dimension.Rows; i++)
             {
@@ -696,20 +708,20 @@ public class CreateDoc
                 {
                     list.Add(new PlayersListStruct
                     {
-                        CodeCompetition = excelTable.Cells[i, 13]?.Value?.ToString(),
-                        CodeExhibition = excelTable.Cells[i, 14]?.Value?.ToString(),
-                        CodeContest = excelTable.Cells[i, 15]?.Value?.ToString(),
+                        CodeCompetition = excelTable.Cells[i, 12]?.Value?.ToString(),
+                        CodeExhibition = excelTable.Cells[i, 13]?.Value?.ToString(),
+                        CodeContest = excelTable.Cells[i, 14]?.Value?.ToString(),
                         OlympicsContest = null /*excelTable.Cells[i, 15]?.Value?.ToString()*/,
-                        FioPlayers = excelTable.Cells[i, 4]?.Value?.ToString(),
-                        BirthdayPlayers = excelTable.Cells[i, 5]?.Value != null
+                        FioPlayers = excelTable.Cells[i, 3]?.Value?.ToString(),
+                        BirthdayPlayers = excelTable.Cells[i, 4]?.Value != null
                             ? DateTime.FromOADate((double)excelTable.Cells[i, 5].Value)
                             : default,
-                        SchoolPlayers = excelTable.Cells[i, 12]?.Value?.ToString(),
-                        CityPlayers = excelTable.Cells[i, 11]?.Value?.ToString(),
-                        TeacherPlayers = excelTable.Cells[i, 18]?.Value?.ToString(),
-                        IsMen = excelTable.Cells[i, 21]?.Value?.ToString() == "М",
-                        NameCommand = excelTable.Cells[i, 8]?.Value?.ToString(),
-                        EMail = excelTable.Cells[i, 20]?.Value?.ToString()
+                        SchoolPlayers = excelTable.Cells[i, 11]?.Value?.ToString(),
+                        CityPlayers = excelTable.Cells[i, 10]?.Value?.ToString(),
+                        TeacherPlayers = excelTable.Cells[i, 17]?.Value?.ToString(),
+                        IsMen = excelTable.Cells[i, 20]?.Value?.ToString() == "М",
+                        NameCommand = excelTable.Cells[i, 7]?.Value?.ToString(),
+                        EMail = excelTable.Cells[i, 19]?.Value?.ToString()
                     });
                 }
             }

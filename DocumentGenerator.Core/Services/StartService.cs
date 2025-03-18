@@ -10,13 +10,15 @@ public class StartService
     public List<string> SourceNames { get; set; }
     public string References { get; set; }
     public string FolderTo { get; set; }
+    public string PathToImage { get; set; }
 
     public IObservable<string> Message => _message;
 
     private ISubject<string> _message;
 
-    public StartService(List<string> nameLayouts, List<string> sourceNames, string folderTo, string referenses)
+    public StartService(List<string> nameLayouts, List<string> sourceNames, string folderTo, string referenses, string image)
     {
+        PathToImage = image;
         References = referenses;
         _headers = new Dictionary<string, string>();
         SourceNames = sourceNames;
@@ -46,15 +48,9 @@ public class StartService
                 }
             }
         }*/
-
-        foreach (var item in NameLayouts)
-        {
-            Console.WriteLine(item);
-        }
-
         _message.OnNext("Starting document generator.");
         CreateDoc.CreateAllDoc(References, SourceNames.First(), FolderTo, 
-            ref _message);
+            ref _message, PathToImage);
 
     }
 

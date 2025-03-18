@@ -148,7 +148,7 @@ public class WordDiplomSertificat
                         diplomStruct.Competition = Format(Competition, "соревновании",
                             _referencesDic[people.CodeCompetition].NameCompetition);
                         diplomStruct.Age = Format(Age, _referencesDic[people.CodeCompetition].AgeRank);
-                        creationDelegate(diplomStruct, currentPath + people.CodeCompetition);
+                        creationDelegate(diplomStruct, currentPath + people.CodeCompetition, substrateFilePath);
                     }
 
                     if (!IsNullOrEmpty(people.CodeContest) && !people.CodeContest.Contains("не участвую"))
@@ -196,7 +196,7 @@ public class WordDiplomSertificat
         using (DocX document = DocX.Create(savePath + ".docx"))
         {
             // Добавляем параграфы
-            AddParagraph(document, diplom.Competition, 360f, 0f, 16, "Calibri", true);
+            AddParagraph(document, diplom.Competition, 298f, 0f, 16, "Calibri", true);
             AddParagraph(document, "возрастная категория", 6f, 0f, 16, "Calibri", true);
             AddParagraph(document, diplom.Age.Substring(20), 0f, 0f, 16, "Calibri", true);
 
@@ -244,12 +244,25 @@ public class WordDiplomSertificat
             try
             {
                 // Добавляем изображение подложки
-                var image = document.AddImage(substrateFilePath);
-                var picture = image.CreatePicture();
-                document.InsertParagraph("").InsertPicture(picture);
+                if (substrateFilePath != null)
+                {
+                    var image = document.AddImage(substrateFilePath);
+                    var picture = image.CreatePicture();
+                    picture.Width = 797;  // Ширина страницы A4 в пикселях
+                    picture.Height = 1127; // Высота страницы A4 в пикселях
+
+                    // Вставляем изображение в начало документа
+                    var paragraph = document.InsertParagraph();
+                    paragraph.Alignment = Alignment.center; // Центрируем изображение
+                    paragraph.InsertPicture(picture);
+
+                    // Устанавливаем параметры параграфа, чтобы изображение было как фон
+                    paragraph.SpacingBefore(0);
+                    paragraph.SpacingAfter(0);
+                }
 
                 // Добавляем параграфы
-                var fioParagraph = AddParagraph(document, diplom.Fio, 283f, 4f, 26, "Calibri", true);
+                var fioParagraph = AddParagraph(document, diplom.Fio, 232f, 4f, 26, "Calibri", true);
                 fioParagraph.Bold();
 
                 if (diplom.City.Length >= 44)
