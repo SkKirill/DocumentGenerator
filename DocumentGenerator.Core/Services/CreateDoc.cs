@@ -21,11 +21,11 @@ public class CreateDoc
             CreateListForDiplomsOffline(out List<PlayersListStruct> playersOnline, ref filePathIn);
             WordDiplomSertificat doc = new WordDiplomSertificat(FilePathReference, 
                 filePathIn, foldelPathOut, playersOnline, cities, references, substrateFilePath);
-            doc.CreateCertificateWithBacking();
-            doc.CreateDiploms();
+            //doc.CreateCertificateWithBacking();
             doc.CreateCertificate();
+            doc.CreateDiploms();
             
-            /*_messageSubject.OnNext("Файлы прочитаны, начало создания!");
+            _messageSubject.OnNext("Файлы прочитаны, начало создания!");
             CreateCityes(foldelPathOut, playersOnline, cities, "города-очно");
             CreateModerOffline(foldelPathOut, playersOnline, references);
 
@@ -34,8 +34,8 @@ public class CreateDoc
             CreateCityes(foldelPathOut, players, cities);
             CreateModerOnline(foldelPathOut, players, references);
 
-            CreateEnd(filePathIn, foldelPathOut, references); // todo: проверить
-            */
+            //CreateEnd(filePathIn, foldelPathOut, references); // todo: проверить
+            
 
             _messageSubject.OnNext($"Всего {playersOnline.Count} строк обработано.\n" +
                                    $"Программа выполнена за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");

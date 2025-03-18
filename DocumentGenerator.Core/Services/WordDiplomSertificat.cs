@@ -1,10 +1,5 @@
-﻿using System.Drawing;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Xceed.Words.NET;
+﻿using Xceed.Words.NET;
 using Xceed.Document.NET;
-using Xceed.Words.NET;
 using static System.String;
 
 namespace DocumentGenerator.Core.Services;
@@ -196,12 +191,12 @@ public class WordDiplomSertificat
         using (DocX document = DocX.Create(savePath + ".docx"))
         {
             // Добавляем параграфы
-            AddParagraph(document, diplom.Competition, 298f, 0f, 16, "Calibri", true);
+            AddParagraph(document, diplom.Competition, 350f, 0f, 16, "Calibri", true);
             AddParagraph(document, "возрастная категория", 6f, 0f, 16, "Calibri", true);
             AddParagraph(document, diplom.Age.Substring(20), 0f, 0f, 16, "Calibri", true);
 
             // ФИО участника
-            var fioParagraph = AddParagraph(document, diplom.Fio, 60f, 12f, 26, "Calibri", true);
+            var fioParagraph = AddParagraph(document, diplom.Fio, 44f, 12f, 26, "Calibri", true);
             fioParagraph.Bold();
 
             AddParagraph(document, diplom.Birthday, 6f, 0f, 16, "Calibri", true);
@@ -262,7 +257,7 @@ public class WordDiplomSertificat
                 }
 
                 // Добавляем параграфы
-                var fioParagraph = AddParagraph(document, diplom.Fio, 232f, 4f, 26, "Calibri", true);
+                var fioParagraph = AddParagraph(document, diplom.Fio, 283f, 4f, 26, "Calibri", true);
                 fioParagraph.Bold();
 
                 if (diplom.City.Length >= 44)
