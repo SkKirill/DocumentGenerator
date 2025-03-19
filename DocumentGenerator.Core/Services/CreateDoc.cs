@@ -18,26 +18,29 @@ public class CreateDoc
                 ref FilePathReference) &&
             CreateDictionaryCity(out Dictionary<string, string> cities, ref filePathIn))
         {
-            CreateListForDiplomsOffline(out List<PlayersListStruct> playersOnline, ref filePathIn);
-            WordDiplomSertificat doc = new WordDiplomSertificat(FilePathReference, 
-                filePathIn, foldelPathOut, playersOnline, cities, references, substrateFilePath);
-            //doc.CreateCertificateWithBacking();
-            doc.CreateCertificate();
-            doc.CreateDiploms();
+            // все что очно
+            CreateListForDiplomsOffline(out List<PlayersListStruct> playersOffline, ref filePathIn);
+            var doc = new WordDiplomCertificate(foldelPathOut, playersOffline, cities, references, substrateFilePath);
+            /*doc.CreateDiploms("дипломы-очно");
+            doc.CreateCertificate("сертификаты-очно");
+            doc.CreateCertificateWithBacking("сертиф-с-под-очно");
+            CreateCityes(foldelPathOut, playersOffline, cities, "города-очно");
+            CreateModerOffline(foldelPathOut, playersOffline, references);
+            */
             
-            _messageSubject.OnNext("Файлы прочитаны, начало создания!");
-            CreateCityes(foldelPathOut, playersOnline, cities, "города-очно");
-            CreateModerOffline(foldelPathOut, playersOnline, references);
-
-
-            CreateListForDiplomsOnline(out List<PlayersListStruct> players, ref filePathIn);
-            CreateCityes(foldelPathOut, players, cities);
-            CreateModerOnline(foldelPathOut, players, references);
+            // все что дистантом
+            CreateListForDiplomsOnline(out List<PlayersListStruct> playersOnline, ref filePathIn); 
+            doc = new WordDiplomCertificate(foldelPathOut, playersOnline, cities, references, substrateFilePath);
+            doc.CreateDiploms("дипломы-дист");
+            doc.CreateCertificate("сертификаты-дист");
+            doc.CreateCertificateWithBacking("сертиф-с-под-дист");
+            CreateCityes(foldelPathOut, playersOnline, cities);
+            CreateModerOnline(foldelPathOut, playersOnline, references);
 
             //CreateEnd(filePathIn, foldelPathOut, references); // todo: проверить
-            
 
-            _messageSubject.OnNext($"Всего {playersOnline.Count} строк обработано.\n" +
+
+            _messageSubject.OnNext($"Всего {playersOnline.Count + playersOffline.Count} строк обработано.\n" +
                                    $"Программа выполнена за {(DateTime.Now - dateTime).TotalSeconds:F2} сек.");
         }
     }
@@ -241,42 +244,42 @@ public class CreateDoc
                 worksheet.Cells["A6:A7"].Merge = true;
                 worksheet.Cells["A6:A7"].Style.WrapText = true;
                 worksheet.Cells["A6"].Value = "№ П/П";
-                
+
                 worksheet.Cells["B6:B7"].Merge = true;
                 worksheet.Cells["B6:B7"].Style.WrapText = true;
                 worksheet.Cells["B6"].Value = "Фамилия, Имя, Отчество участника";
-                
+
                 worksheet.Cells["C6:C7"].Merge = true;
                 worksheet.Cells["C6"].Value = "Фамилия, Имя, Отчество руководителя команды";
                 worksheet.Cells["C6"].Style.WrapText = true;
-                
+
                 worksheet.Cells["D6:D7"].Merge = true;
                 worksheet.Cells["D6"].Value = "Согласие на обработку персональных данных участника";
                 worksheet.Cells["D6"].Style.WrapText = true;
-                
+
                 worksheet.Cells["E6:E7"].Merge = true;
                 worksheet.Cells["E6"].Value = "Согласие на обработку персональных данных руководителя";
                 worksheet.Cells["E6"].Style.WrapText = true;
-                
+
                 worksheet.Cells["F6:F7"].Merge = true;
                 worksheet.Cells["F6"].Value = "Приказ или расписка ответственности";
                 worksheet.Cells["F6"].Style.WrapText = true;
-                
+
                 worksheet.Cells["G6:H6"].Merge = true;
                 worksheet.Cells["G6"].Value = "Талоны на питание";
                 worksheet.Cells["G6"].Style.WrapText = true;
-                
+
                 worksheet.Cells["G7"].Value = "обед";
                 worksheet.Cells["H7"].Value = "завтрак";
-                
+
                 worksheet.Cells["I6:I7"].Merge = true;
                 worksheet.Cells["I6"].Value = "Значки";
                 worksheet.Cells["I6"].Style.WrapText = true;
-                
+
                 worksheet.Cells["J6:J7"].Merge = true;
                 worksheet.Cells["J6"].Value = "Подпись педагога";
                 worksheet.Cells["J6"].Style.WrapText = true;
-                
+
                 // Форматирование границ
                 for (int col = 1; col <= 10; col++)
                 {
@@ -314,13 +317,13 @@ public class CreateDoc
                         row++;
                     }
                 }
-                
+
                 worksheet.Cells[row, 2].Value = "Руководитель команды";
                 worksheet.Cells[row, 7].Value = "1"; // Количество обедов
                 worksheet.Cells[row, 8].Value = "1"; // Количество завтраков
-                
+
                 row += 1;
-                
+
                 // Итоговая строка
                 worksheet.Cells[row, 2].Value = "Итого";
                 worksheet.Cells[row, 2].Style.Font.Bold = true;
@@ -330,12 +333,12 @@ public class CreateDoc
                 worksheet.Cells[row, 8].Style.Font.Bold = true;
 
                 row += 1;
-                
+
                 for (int col = 1; col <= 10; col++)
                 {
                     worksheet.Cells[row, col].BorderOutline();
-                    worksheet.Cells[row-1, col].BorderOutline();
-                    worksheet.Cells[row-2, col].BorderOutline();
+                    worksheet.Cells[row - 1, col].BorderOutline();
+                    worksheet.Cells[row - 2, col].BorderOutline();
                 }
 
                 row += 2;
@@ -624,10 +627,11 @@ public class CreateDoc
                 {
                     if (dictionary.ContainsKey(excelTable.Cells[i, 2].Value.ToString()))
                     {
-                        _messageSubject.OnNext($"Ошибка: ключ {excelTable.Cells[i, 2].Value} в Населенных пунктах повторяется!");
+                        _messageSubject.OnNext(
+                            $"Ошибка: ключ {excelTable.Cells[i, 2].Value} в Населенных пунктах повторяется!");
                         continue;
                     }
-                    
+
                     dictionary.Add(
                         excelTable.Cells[i, 2].Value.ToString(),
                         excelTable.Cells[i, 3].Value.ToString());
@@ -669,7 +673,7 @@ public class CreateDoc
                         _messageSubject.OnNext($"Ошибка: ключ {excelTable.Cells[i, 1].Value} повторяется!");
                         continue;
                     }
-                    
+
                     dictionary.Add(excelTable.Cells[i, 1].Value.ToString(),
                         new ReferenceMaterialDictionary
                         {

@@ -42,51 +42,35 @@ public struct PlayersListStruct
     }
 }
 
-public class WordDiplomSertificat
+public class WordDiplomCertificate(
+    string folderPathOut,
+    List<PlayersListStruct> playerList,
+    Dictionary<string, string> citiesDic,
+    Dictionary<string,
+        ReferenceMaterialDictionary> referencesDic,
+    string substrateFilePath)
 {
     private const string Competition = "в {0} «{1}»,";
     private const string Olimpic = "в {0} {1},";
     private const string Age = "возрастная категория «{0}»";
     private const string School = "{0} {1}";
-    private const string BirthdaySchool = "{0} {1} {2}";
     private const string Teacher = "Педагог: {0}";
 
     private delegate void DiplomCreationDelegate(DiplomStruct diplom, string savePath, string substrateFilePath = null);
 
-    private string _filePathReference;
-    private string _filePathIn;
-    private readonly string _foldelPathOut;
-    private readonly List<PlayersListStruct> _playerList;
-    private readonly Dictionary<string, string> _citiesDic;
-    private readonly Dictionary<string, ReferenceMaterialDictionary> _referencesDic;
-    private readonly string _substrateFilePath;
-
-    public WordDiplomSertificat(string filePathReference, string filePathIn, string foldelPathOut,
-        List<PlayersListStruct> playerList, Dictionary<string, string> citiesDic, Dictionary<string,
-            ReferenceMaterialDictionary> referencesDic, string substrateFilePath)
+    public bool CreateCertificateWithBacking(string type)
     {
-        _filePathReference = filePathReference;
-        _filePathIn = filePathIn;
-        _foldelPathOut = foldelPathOut;
-        _playerList = playerList;
-        _citiesDic = citiesDic;
-        _referencesDic = referencesDic;
-        _substrateFilePath = substrateFilePath;
+        return CreateWord(new WordDocumentGenerator().CreateSertificatWithBacking, type, substrateFilePath);
     }
 
-    public bool CreateCertificateWithBacking()
+    public bool CreateCertificate(string type)
     {
-        return CreateWord(CreateSertificatWithBacking, "сертификаты с подложкой-очно", _substrateFilePath);
+        return CreateWord(CreateSertificatWithBacking, type);
     }
 
-    public bool CreateCertificate()
+    public bool CreateDiploms(string type)
     {
-        return CreateWord(CreateSertificatWithBacking, "сертификаты-дист", null);
-    }
-
-    public bool CreateDiploms()
-    {
-        return CreateWord(CreateDiplom, "дипломы-дист", null);
+        return CreateWord(CreateDiplom, type, null);
     }
 
     private bool CreateWord(DiplomCreationDelegate creationDelegate, string folderMain, string substrateFilePath = null)
@@ -95,9 +79,9 @@ public class WordDiplomSertificat
         try
         {
             var i = 0;
-            while (i < _playerList.Count)
+            while (i < playerList.Count)
             {
-                var people = _playerList[i];
+                var people = playerList[i];
                 Console.WriteLine(i.ToString().PadRight(4, ' ') + " | " + people.ToString().PadRight(50, ' ') + " | " +
                                   folderMain);
                 if ((!IsNullOrEmpty(people.CodeCompetition) && !people.CodeCompetition.Contains("не участвую"))
@@ -106,18 +90,18 @@ public class WordDiplomSertificat
                     || (!IsNullOrEmpty(people.OlympicsContest) &&
                         !people.OlympicsContest.Contains("не участвую")))
                 {
-                    var currentPath = _foldelPathOut + @"\" + folderMain + @"\" + people.CityPlayers + @"\" +
+                    var currentPath = folderPathOut + @"\" + folderMain + @"\" + people.CityPlayers + @"\" +
                                       people.FioPlayers;
-                    if (!Directory.Exists(_foldelPathOut + @"\" + folderMain))
+                    if (!Directory.Exists(folderPathOut + @"\" + folderMain))
                     {
                         // Создаем папку, если она не существует
-                        Directory.CreateDirectory(_foldelPathOut + @"\" + folderMain);
+                        Directory.CreateDirectory(folderPathOut + @"\" + folderMain);
                     }
 
-                    if (!Directory.Exists(_foldelPathOut + @"\" + folderMain + @"\" + people.CityPlayers))
+                    if (!Directory.Exists(folderPathOut + @"\" + folderMain + @"\" + people.CityPlayers))
                     {
                         // Создаем папку, если она не существует
-                        Directory.CreateDirectory(_foldelPathOut + @"\" + folderMain + @"\" + people.CityPlayers);
+                        Directory.CreateDirectory(folderPathOut + @"\" + folderMain + @"\" + people.CityPlayers);
                     }
 
                     diplomStruct.Fio =
@@ -134,31 +118,31 @@ public class WordDiplomSertificat
                             people.SchoolPlayers);
                     }
 
-                    if (people.CityPlayers != null) diplomStruct.City = _citiesDic[people.CityPlayers];
+                    if (people.CityPlayers != null) diplomStruct.City = citiesDic[people.CityPlayers];
                     diplomStruct.Teacher = Format(Teacher, people.TeacherPlayers);
 
                     if (!IsNullOrEmpty(people.CodeCompetition) &&
                         !people.CodeCompetition.Contains("не участвую"))
                     {
                         diplomStruct.Competition = Format(Competition, "соревновании",
-                            _referencesDic[people.CodeCompetition].NameCompetition);
-                        diplomStruct.Age = Format(Age, _referencesDic[people.CodeCompetition].AgeRank);
+                            referencesDic[people.CodeCompetition].NameCompetition);
+                        diplomStruct.Age = Format(Age, referencesDic[people.CodeCompetition].AgeRank);
                         creationDelegate(diplomStruct, currentPath + people.CodeCompetition, substrateFilePath);
                     }
 
                     if (!IsNullOrEmpty(people.CodeContest) && !people.CodeContest.Contains("не участвую"))
                     {
                         diplomStruct.Competition = Format(Competition, "конкурсе",
-                            _referencesDic[people.CodeContest].NameCompetition);
-                        diplomStruct.Age = Format(Age, _referencesDic[people.CodeContest].AgeRank);
+                            referencesDic[people.CodeContest].NameCompetition);
+                        diplomStruct.Age = Format(Age, referencesDic[people.CodeContest].AgeRank);
                         creationDelegate(diplomStruct, currentPath + people.CodeContest);
                     }
 
                     if (!IsNullOrEmpty(people.CodeExhibition) && !people.CodeExhibition.Contains("не участвую"))
                     {
                         diplomStruct.Competition = Format(Competition, "выставке",
-                            _referencesDic[people.CodeExhibition].NameCompetition);
-                        diplomStruct.Age = Format(Age, _referencesDic[people.CodeExhibition].AgeRank);
+                            referencesDic[people.CodeExhibition].NameCompetition);
+                        diplomStruct.Age = Format(Age, referencesDic[people.CodeExhibition].AgeRank);
                         creationDelegate(diplomStruct, currentPath + people.CodeExhibition);
                     }
 
@@ -166,8 +150,8 @@ public class WordDiplomSertificat
                         !people.OlympicsContest.Contains("не участвую"))
                     {
                         diplomStruct.Competition = Format(Olimpic, "олимпиаде",
-                            _referencesDic[people.OlympicsContest].NameCompetition);
-                        diplomStruct.Age = Format(Age, _referencesDic[people.OlympicsContest].AgeRank);
+                            referencesDic[people.OlympicsContest].NameCompetition);
+                        diplomStruct.Age = Format(Age, referencesDic[people.OlympicsContest].AgeRank);
                         creationDelegate(diplomStruct, currentPath + people.OlympicsContest, substrateFilePath);
                     }
                 }
@@ -214,7 +198,7 @@ public class WordDiplomSertificat
         }
     }
 
-    private Paragraph AddParagraph(DocX document, string text, float spaceBefore, float spaceAfter,
+    private Xceed.Document.NET.Paragraph AddParagraph(DocX document, string text, float spaceBefore, float spaceAfter,
         int fontSize, string fontName, bool isCentered)
     {
         var paragraph = document.InsertParagraph(text);
