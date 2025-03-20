@@ -23,19 +23,22 @@ public class CreateDoc
             var doc = new WordDiplomCertificate(foldelPathOut, playersOffline, cities, references, substrateFilePath);
             /*doc.CreateDiploms("дипломы-очно");
             doc.CreateCertificate("сертификаты-очно");
-            doc.CreateCertificateWithBacking("сертиф-с-под-очно");
-            CreateCityes(foldelPathOut, playersOffline, cities, "города-очно");
+            */doc.CreateCertificateWithBacking("сертиф-с-под-очно");
+            /*CreateCityes(foldelPathOut, playersOffline, cities, "города-очно");
             CreateModerOffline(foldelPathOut, playersOffline, references);
             */
+            
             
             // все что дистантом
             CreateListForDiplomsOnline(out List<PlayersListStruct> playersOnline, ref filePathIn); 
             doc = new WordDiplomCertificate(foldelPathOut, playersOnline, cities, references, substrateFilePath);
-            doc.CreateDiploms("дипломы-дист");
+            /*doc.CreateDiploms("дипломы-дист");
             doc.CreateCertificate("сертификаты-дист");
+            */
             doc.CreateCertificateWithBacking("сертиф-с-под-дист");
-            CreateCityes(foldelPathOut, playersOnline, cities);
+            /*CreateCityes(foldelPathOut, playersOnline, cities);
             CreateModerOnline(foldelPathOut, playersOnline, references);
+            */
 
             //CreateEnd(filePathIn, foldelPathOut, references); // todo: проверить
 
