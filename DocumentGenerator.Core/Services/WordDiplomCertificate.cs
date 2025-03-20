@@ -135,7 +135,7 @@ public class WordDiplomCertificate(
                         diplomStruct.Competition = Format(Competition, "конкурсе",
                             referencesDic[people.CodeContest].NameCompetition);
                         diplomStruct.Age = Format(Age, referencesDic[people.CodeContest].AgeRank);
-                        creationDelegate(diplomStruct, currentPath + people.CodeContest);
+                        creationDelegate(diplomStruct, currentPath + people.CodeContest, substrateFilePath);
                     }
 
                     if (!IsNullOrEmpty(people.CodeExhibition) && !people.CodeExhibition.Contains("не участвую"))
@@ -143,7 +143,7 @@ public class WordDiplomCertificate(
                         diplomStruct.Competition = Format(Competition, "выставке",
                             referencesDic[people.CodeExhibition].NameCompetition);
                         diplomStruct.Age = Format(Age, referencesDic[people.CodeExhibition].AgeRank);
-                        creationDelegate(diplomStruct, currentPath + people.CodeExhibition);
+                        creationDelegate(diplomStruct, currentPath + people.CodeExhibition, substrateFilePath);
                     }
 
                     if (!IsNullOrEmpty(people.OlympicsContest) &&
