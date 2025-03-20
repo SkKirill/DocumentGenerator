@@ -10,7 +10,7 @@ public class WordDocumentGenerator
         // Добавляем новый документ
         Word.Document doc = wordApp.Documents.Add();
 
-        CreateParagrahp(ref doc, diplom.Fio, 1, 283, 4);
+        CreateParagrahp(ref doc, diplom.Fio, 1, 264, 4);
         doc.Paragraphs[1].Range.Font.Size = 26;
         doc.Paragraphs[1].Range.Font.Bold = 1;
         if (diplom.City.Length >= 44)
@@ -32,18 +32,18 @@ public class WordDocumentGenerator
             CreateParagrahp(ref doc, first, 3, 0, 0);
             CreateParagrahp(ref doc, last, 4, 0, 0);
 
-            CreateParagrahp(ref doc, diplom.Competition, 5, 120, 8);
+            CreateParagrahp(ref doc, diplom.Competition, 5, 100, 8);
             CreateParagrahp(ref doc, diplom.Age, 6, 0, 8);
-            CreateParagrahp(ref doc, diplom.Teacher, 7, 36, 8);
+            CreateParagrahp(ref doc, diplom.Teacher, 7, 18, 8);
             doc.Paragraphs[7].Range.Font.Size = 15;
         }
         else
         {
             CreateParagrahp(ref doc, diplom.Birthday, 2, 0, 8);
             CreateParagrahp(ref doc, diplom.City, 3, 0, 8);
-            CreateParagrahp(ref doc, diplom.Competition, 4, 120, 8);
+            CreateParagrahp(ref doc, diplom.Competition, 4, 100, 8);
             CreateParagrahp(ref doc, diplom.Age, 5, 0, 8);
-            CreateParagrahp(ref doc, diplom.Teacher, 6, 36, 8);
+            CreateParagrahp(ref doc, diplom.Teacher, 6, 18, 8);
             doc.Paragraphs[6].Range.Font.Size = 15;
         }
 

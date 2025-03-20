@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Subjects;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace DocumentGenerator.Core.Services;
 
@@ -21,9 +22,9 @@ public class CreateDoc
             // все что очно
             CreateListForDiplomsOffline(out List<PlayersListStruct> playersOffline, ref filePathIn);
             var doc = new WordDiplomCertificate(foldelPathOut, playersOffline, cities, references, substrateFilePath);
+            doc.CreateCertificateWithBacking("сертиф-с-под-очно");
             doc.CreateDiploms("дипломы-очно");
             doc.CreateCertificate("сертификаты-очно");
-            doc.CreateCertificateWithBacking("сертиф-с-под-очно");
             CreateCityes(foldelPathOut, playersOffline, cities, "города-очно");
             CreateModerOffline(foldelPathOut, playersOffline, references);
             
@@ -224,59 +225,74 @@ public class CreateDoc
                 // Лист первичной регистрации
                 worksheet.Cells["A2:J2"].Merge = true;
                 worksheet.Cells["A2"].Value = "Лист первичной регистрации участников";
-                worksheet.Cells["A2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
                 // Название города
                 worksheet.Cells["A3:J3"].Merge = true;
                 worksheet.Cells["A3"].Value = kvpair.Value;
                 worksheet.Cells["A3"].Style.Font.Bold = true;
-                worksheet.Cells["A3"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
                 // Название школы
                 worksheet.Cells["A4:J4"].Merge = true;
                 worksheet.Cells["A4"].Value = currentSchool;
                 worksheet.Cells["A4"].Style.Font.UnderLine = true;
-                worksheet.Cells["A4"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
                 // Заголовки таблицы
                 worksheet.Cells["A6:A7"].Merge = true;
                 worksheet.Cells["A6:A7"].Style.WrapText = true;
+                worksheet.Cells["A6:A7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A6:A7"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
                 worksheet.Cells["A6"].Value = "№ П/П";
 
                 worksheet.Cells["B6:B7"].Merge = true;
                 worksheet.Cells["B6:B7"].Style.WrapText = true;
+                worksheet.Cells["B6:B7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["B6:B7"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
                 worksheet.Cells["B6"].Value = "Фамилия, Имя, Отчество участника";
 
                 worksheet.Cells["C6:C7"].Merge = true;
                 worksheet.Cells["C6"].Value = "Фамилия, Имя, Отчество руководителя команды";
                 worksheet.Cells["C6"].Style.WrapText = true;
+                worksheet.Cells["C6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["C6"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
 
                 worksheet.Cells["D6:D7"].Merge = true;
                 worksheet.Cells["D6"].Value = "Согласие на обработку персональных данных участника";
                 worksheet.Cells["D6"].Style.WrapText = true;
+                worksheet.Cells["D6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["D6"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
 
                 worksheet.Cells["E6:E7"].Merge = true;
                 worksheet.Cells["E6"].Value = "Согласие на обработку персональных данных руководителя";
                 worksheet.Cells["E6"].Style.WrapText = true;
+                worksheet.Cells["E6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["E6"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
 
                 worksheet.Cells["F6:F7"].Merge = true;
                 worksheet.Cells["F6"].Value = "Приказ или расписка ответственности";
                 worksheet.Cells["F6"].Style.WrapText = true;
+                worksheet.Cells["F6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["F6"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
 
-                worksheet.Cells["G6:H6"].Merge = true;
+                worksheet.Cells["G6:H7"].Merge = true;
                 worksheet.Cells["G6"].Value = "Талоны на питание";
                 worksheet.Cells["G6"].Style.WrapText = true;
-
-                worksheet.Cells["G7"].Value = "обед";
-                worksheet.Cells["H7"].Value = "завтрак";
+                worksheet.Cells["G6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["G6"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
 
                 worksheet.Cells["I6:I7"].Merge = true;
                 worksheet.Cells["I6"].Value = "Значки";
                 worksheet.Cells["I6"].Style.WrapText = true;
+                worksheet.Cells["I6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["I6"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
 
                 worksheet.Cells["J6:J7"].Merge = true;
                 worksheet.Cells["J6"].Value = "Подпись педагога";
                 worksheet.Cells["J6"].Style.WrapText = true;
+                worksheet.Cells["J6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["J6"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
 
                 // Форматирование границ
                 for (int col = 1; col <= 10; col++)
@@ -302,7 +318,7 @@ public class CreateDoc
                         worksheet.Cells[row, 5].Value = ""; // Согласие на обработку данных руководителя
                         worksheet.Cells[row, 6].Value = ""; // Приказ или расписка ответственности
                         worksheet.Cells[row, 7].Value = "1"; // Талоны на питание (обед)
-                        worksheet.Cells[row, 8].Value = "1"; // Талоны на питание (завтрак)
+                        worksheet.Cells[$"G{row}:H{row}"].Merge = true;
                         worksheet.Cells[row, 9].Value = ""; // Значки
                         worksheet.Cells[row, 10].Value = ""; // Подпись педагога
 
@@ -318,7 +334,6 @@ public class CreateDoc
 
                 worksheet.Cells[row, 2].Value = "Руководитель команды";
                 worksheet.Cells[row, 7].Value = "1"; // Количество обедов
-                worksheet.Cells[row, 8].Value = "1"; // Количество завтраков
 
                 row += 1;
 
@@ -327,8 +342,6 @@ public class CreateDoc
                 worksheet.Cells[row, 2].Style.Font.Bold = true;
                 worksheet.Cells[row, 7].Value = row - 8; // Количество обедов
                 worksheet.Cells[row, 7].Style.Font.Bold = true;
-                worksheet.Cells[row, 8].Value = row - 8; // Количество завтраков
-                worksheet.Cells[row, 8].Style.Font.Bold = true;
 
                 row += 1;
 
@@ -343,21 +356,17 @@ public class CreateDoc
 
                 worksheet.Cells[row, 2].Value = "Сведения заполнил";
                 worksheet.Cells[$"C{row}:E{row}"].Merge = true;
-                worksheet.Cells[$"C{row}:E{row}"].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                worksheet.Cells[$"C{row}:E{row}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells[$"C{row + 1}:E{row + 1}"].Merge = true;
                 worksheet.Cells[$"C{row + 1}"].Value = "ФИО";
-                worksheet.Cells[$"C{row}"].Style.HorizontalAlignment =
-                    OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                worksheet.Cells[$"C{row + 1}"].Style.HorizontalAlignment =
-                    OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells[$"C{row}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[$"C{row + 1}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 worksheet.Cells[$"I{row}:J{row}"].Merge = true;
-                worksheet.Cells[$"I{row}:J{row}"].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                worksheet.Cells[$"I{row}:J{row}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells[$"I{row + 1}:J{row + 1}"].Merge = true;
                 worksheet.Cells[$"I{row + 1}"].Value = "Подпись";
-                worksheet.Cells[$"I{row + 1}"].Style.HorizontalAlignment =
-                    OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                worksheet.Cells[$"I{row}"].Style.HorizontalAlignment =
-                    OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells[$"I{row + 1}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[$"I{row}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
                 worksheet.Column(1).Width = 7;
                 worksheet.Column(2).Width = 33;
@@ -365,8 +374,8 @@ public class CreateDoc
                 worksheet.Column(4).Width = 22;
                 worksheet.Column(5).Width = 22;
                 worksheet.Column(6).Width = 16;
-                worksheet.Column(7).Width = 7;
-                worksheet.Column(8).Width = 7;
+                worksheet.Column(7).Width = 10;
+                worksheet.Column(8).Width = 0;
                 worksheet.Column(9).Width = 7;
                 worksheet.Column(10).Width = 17;
 
@@ -430,14 +439,23 @@ public class CreateDoc
 
             // Колонки таблицы
             worksheet.Cells["A6"].Value = "№ П/П";
+            worksheet.Cells["A6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["B6"].Value = "Название команды";
+            worksheet.Cells["B6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["C6"].Value = "ФИО участника";
+            worksheet.Cells["C6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["D6"].Value = "Дата рождения";
+            worksheet.Cells["D6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["E6"].Value = "Учебное заведение";
+            worksheet.Cells["E6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["F6"].Value = "ФИО руководителя";
+            worksheet.Cells["F6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["G6"].Value = "Населенный пункт";
+            worksheet.Cells["G6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["H6"].Value = "Отметка о прибытии";
+            worksheet.Cells["H6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["I6"].Value = "e-mail";
+            worksheet.Cells["I6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
             for (int col = 1; col <= 9; col++)
             {
@@ -456,14 +474,41 @@ public class CreateDoc
                     row++;
 
                     worksheet.Cells[row, 1].Value = row - 6; // № П/П
+                    worksheet.Cells[row, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 1].Style.WrapText = true;
                     worksheet.Cells[row, 2].Value = people.NameCommand; // Название команды
+                    worksheet.Cells[row, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 2].Style.WrapText = true;
                     worksheet.Cells[row, 3].Value = people.FioPlayers; // ФИО участника
+                    worksheet.Cells[row, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 3].Style.WrapText = true;
                     worksheet.Cells[row, 4].Value = people.BirthdayPlayers.ToShortDateString(); // Дата рождения
+                    worksheet.Cells[row, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 4].Style.WrapText = true;
                     worksheet.Cells[row, 5].Value = people.SchoolPlayers; // Учебное заведение
+                    worksheet.Cells[row, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 5].Style.WrapText = true;
                     worksheet.Cells[row, 6].Value = people.TeacherPlayers; // ФИО руководителя
+                    worksheet.Cells[row, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 6].Style.WrapText = true;
                     worksheet.Cells[row, 7].Value = people.CityPlayers; // Населенный пункт
+                    worksheet.Cells[row, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 7].Style.WrapText = true;
                     worksheet.Cells[row, 8].Value = ""; // Отметка о прибытии
+                    worksheet.Cells[row, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 8].Style.WrapText = true;
                     worksheet.Cells[row, 9].Value = people.EMail; // e-mail
+                    worksheet.Cells[row, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 9].Style.WrapText = true;
 
                     for (int col = 1; col <= 9; col++)
                     {
@@ -506,7 +551,6 @@ public class CreateDoc
         playerList.Sort((item, second) =>
             string.Compare(item.NameCommand, second.NameCommand, StringComparison.Ordinal));
 
-
         int k = 0;
 
         foreach (var kvpair in referencesDic)
@@ -539,14 +583,23 @@ public class CreateDoc
 
             // Колонки таблицы
             worksheet.Cells["A6"].Value = "№ П/П";
+            worksheet.Cells["A6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["B6"].Value = "Название команды";
+            worksheet.Cells["B6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["C6"].Value = "ФИО участника";
+            worksheet.Cells["C6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["D6"].Value = "Дата рождения";
+            worksheet.Cells["D6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["E6"].Value = "Учебное заведение";
+            worksheet.Cells["E6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["F6"].Value = "ФИО руководителя";
+            worksheet.Cells["F6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["G6"].Value = "Населенный пункт";
+            worksheet.Cells["G6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["H6"].Value = "Отметка о прибытии";
+            worksheet.Cells["H6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             worksheet.Cells["I6"].Value = "e-mail";
+            worksheet.Cells["I6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
             for (int col = 1; col <= 9; col++)
             {
@@ -565,14 +618,41 @@ public class CreateDoc
                     row++;
 
                     worksheet.Cells[row, 1].Value = row - 6; // № П/П
+                    worksheet.Cells[row, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 1].Style.WrapText = true;
                     worksheet.Cells[row, 2].Value = people.NameCommand; // Название команды
+                    worksheet.Cells[row, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 2].Style.WrapText = true;
                     worksheet.Cells[row, 3].Value = people.FioPlayers; // ФИО участника
+                    worksheet.Cells[row, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 3].Style.WrapText = true;
                     worksheet.Cells[row, 4].Value = people.BirthdayPlayers.ToShortDateString(); // Дата рождения
+                    worksheet.Cells[row, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 4].Style.WrapText = true;
                     worksheet.Cells[row, 5].Value = people.SchoolPlayers; // Учебное заведение
+                    worksheet.Cells[row, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 5].Style.WrapText = true;
                     worksheet.Cells[row, 6].Value = people.TeacherPlayers; // ФИО руководителя
+                    worksheet.Cells[row, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 6].Style.WrapText = true;
                     worksheet.Cells[row, 7].Value = people.CityPlayers; // Населенный пункт
+                    worksheet.Cells[row, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 7].Style.WrapText = true;
                     worksheet.Cells[row, 8].Value = ""; // Отметка о прибытии
+                    worksheet.Cells[row, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 8].Style.WrapText = true;
                     worksheet.Cells[row, 9].Value = people.EMail; // e-mail
+                    worksheet.Cells[row, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                    worksheet.Cells[row, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                    worksheet.Cells[row, 9].Style.WrapText = true;
 
                     for (int col = 1; col <= 9; col++)
                     {
@@ -590,6 +670,7 @@ public class CreateDoc
             worksheet.Column(7).Width = 16.5;
             worksheet.Column(8).Width = 18.5;
             worksheet.Column(9).Width = 30;
+
 
             // Сохраняем файл
             if (!Directory.Exists(Path.Combine(foldelPathOut, "модерам-очно")))

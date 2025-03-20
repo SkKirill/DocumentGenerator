@@ -79,7 +79,7 @@ public class WordDiplomCertificate(
         try
         {
             var i = 0;
-            while (i < playerList.Count)
+            while (i < 5/*playerList.Count*/)
             {
                 var people = playerList[i];
                 Console.WriteLine(i.ToString().PadRight(4, ' ') + " | " + people.ToString().PadRight(50, ' ') + " | " +
