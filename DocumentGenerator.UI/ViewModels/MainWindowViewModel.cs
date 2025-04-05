@@ -24,8 +24,7 @@ public class MainWindowViewModel : ViewModelBase
     private ViewModelBase _controlSelectPaths;
     private readonly List<IDisposable> _subscriptions;
     private readonly Dictionary<UserControlTypes, ViewModelBase> _viewModels;
-
-    [Obsolete("Obsolete")]
+    
     public MainWindowViewModel()
     {
         _subscriptions = new List<IDisposable>();
