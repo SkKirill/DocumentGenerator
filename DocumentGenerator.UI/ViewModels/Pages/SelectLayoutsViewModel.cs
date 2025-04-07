@@ -7,15 +7,15 @@ using System.Reactive.Subjects;
 using DocumentGenerator.Data.Services;
 using DocumentGenerator.Data.Services.DataBase.Repositories;
 using DocumentGenerator.UI.Models;
-using DocumentGenerator.UI.Services;
-using DynamicData;
+using DocumentGenerator.UI.Models.Pages;
+using DocumentGenerator.UI.Services.WindowsNavigation;
 using ReactiveUI;
 
-namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
+namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
+public class SelectLayoutsViewModel : ViewModelBase, IManagerWindow
 {
-    public IObservable<UserControlTypes> RedirectToView => _redirectToView;
+    public IObservable<ViewTypes> RedirectToView => _redirectToView;
     
     public string NameEditLayout { get; set; }
     /// <summary>
@@ -24,13 +24,13 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
     public ObservableCollection<ListLayoutsModel> ListLayouts { get; set; }
     public ReactiveCommand<Unit, Unit> GoBackActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
-    private readonly Subject<UserControlTypes> _redirectToView;
+    private readonly Subject<ViewTypes> _redirectToView;
     private readonly List<IDisposable> _subscriptions;
 
     public SelectLayoutsViewModel()
     {
         _subscriptions = new List<IDisposable>();
-        _redirectToView = new Subject<UserControlTypes>();
+        _redirectToView = new Subject<ViewTypes>();
         GoBackActionButton = ReactiveCommand.Create(RunGoBackAction);
         ContinueButton = ReactiveCommand.Create(RunContinue);
         ListLayouts = [];
@@ -53,14 +53,14 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
     private void EditItem(string name)
     {
         NameEditLayout = name;
-        _redirectToView.OnNext(UserControlTypes.Edit);
+        _redirectToView.OnNext(ViewTypes.Edit);
     }
 
     private void RunContinue()
     {
         if (ListLayouts.Any(item => item.IsChecked))
         {
-           _redirectToView.OnNext(UserControlTypes.Process);
+           _redirectToView.OnNext(ViewTypes.Process);
            return; 
         }
         // TODO: Сделать тостер, что пользователь не тыкнул ни в одну
@@ -68,7 +68,7 @@ public class SelectLayoutsViewModel : ViewModelBase, IUserControlsNotifier
 
     private void RunGoBackAction()
     {
-        _redirectToView.OnNext(UserControlTypes.Path);
+        _redirectToView.OnNext(ViewTypes.Path);
     }
 
     public List<string> GetCheckedNames()

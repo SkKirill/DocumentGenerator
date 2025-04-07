@@ -9,33 +9,55 @@ using MainWindow = DocumentGenerator.UI.Views.MainWindow;
 
 namespace DocumentGenerator.UI;
 
+/// <summary>
+/// Главный класс приложения Avalonia.
+/// Отвечает за инициализацию, загрузку ресурсов и запуск главного окна.
+/// </summary>
 public class App : Application
 {
-    public static IServiceProvider ServiceProvider { get; set; }
+    /// <summary>
+    /// Глобальный провайдер сервисов, настраивается при запуске.
+    /// </summary>
+    public static IServiceProvider ServiceProvider { get; set; } = null!;
 
-    private ILogger<App> _logger;
-
+    /// <summary>
+    /// Загружает XAML-ресурсы приложения.
+    /// </summary>
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
 
+    /// <summary>
+    /// Вызывается после завершения инициализации платформы Avalonia.
+    /// Используется для запуска основного окна и других зависимостей.
+    /// </summary>
     public override void OnFrameworkInitializationCompleted()
     {
-        // Получаем логгер через DI
-        _logger = ServiceProvider.GetRequiredService<ILogger<App>>();
-        _logger.LogInformation("Приложение инициализируется...");
+        // Проверка на успешное конфигурирование контейнера
+        if (ServiceProvider == null)
+        {
+            throw new InvalidOperationException("Сервис провайдер не был создан!");
+        }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            _logger.LogInformation("Настраиваем главное окно...");
-            
-            desktop.MainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-            desktop.MainWindow.DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
+            // Получаем главное окно и ViewModel через DI
+            try
+            {
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>()
+                };
+            }
+            catch (Exception ex)
+            {
+                var logger = ServiceProvider.GetRequiredService<ILogger<App>>();
+                logger.LogCritical(ex, "Ошибка при инициализации главного окна");
+                throw;
+            }
         }
 
         base.OnFrameworkInitializationCompleted();
-
-        _logger.LogInformation("Приложение успешно запущено.");
     }
 }

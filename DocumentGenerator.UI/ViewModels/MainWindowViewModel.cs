@@ -1,73 +1,68 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DocumentGenerator.Core.Services;
-using DocumentGenerator.UI.Services;
-using DocumentGenerator.UI.ViewModels.UserControlsViewModel;
+﻿using System.Collections.Generic;
+using DocumentGenerator.UI.Models.Pages;
+using DocumentGenerator.UI.Services.WindowsNavigation;
+using DocumentGenerator.UI.ViewModels.Pages;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public class MainWindowViewModel : ViewModelBase, IViewNavigation
 {
-    public ViewModelBase ControlSelectPaths
+    /// <summary>
+    /// ViewModel, для навигации между экранами.
+    /// </summary>
+    public ViewModelBase CurrentView
     {
-        get => _controlSelectPaths;
+        get => _currentView;
         set
         {
-            _controlSelectPaths = value;
+            _currentView = value;
             this.RaisePropertyChanged();
         }
     }
 
-    private StartService _startService;
-    private ViewModelBase _controlSelectPaths;
-    private readonly List<IDisposable> _subscriptions;
-    private readonly Dictionary<UserControlTypes, ViewModelBase> _viewModels;
-    
-    public MainWindowViewModel()
+    // Текущий отображаемый ViewModel
+    private ViewModelBase _currentView;
+
+    // Словарь для хранения всех возможных ViewModel по типу экрана
+    private readonly Dictionary<ViewTypes, ViewModelBase> _viewModels;
+    private readonly ILogger<MainWindowViewModel> _logger;
+
+    public MainWindowViewModel(
+        ILogger<MainWindowViewModel> logger,
+        SelectLayoutsViewModel selectLayoutsViewModel,
+        SelectPathsViewModel selectPathsViewModel,
+        ProcessingViewModel processingViewModel,
+        EditLayoutViewModel editLayoutViewModel)
     {
-        _subscriptions = new List<IDisposable>();
+        _logger = logger;
+        // Инициализация словаря навигации
         _viewModels = new()
         {
-            { UserControlTypes.Layouts, new SelectLayoutsViewModel() },
-            { UserControlTypes.Path, new SelectPathsViewModel() },
-            { UserControlTypes.Process, new ProcessingViewModel() }
+            { ViewTypes.Layouts, selectLayoutsViewModel },
+            { ViewTypes.Path, selectPathsViewModel },
+            { ViewTypes.Edit, editLayoutViewModel },
+            { ViewTypes.Process, processingViewModel }
         };
-        ControlSelectPaths = _viewModels[UserControlTypes.Path];
-        foreach (var viewModel in _viewModels.Values)
-        {
-            if (viewModel is IUserControlsNotifier userControlsNotifier)
-            {
-                _subscriptions.Add(userControlsNotifier.RedirectToView.Subscribe(OnComplete));
-            }
-        }
+
+        // Установка начального экрана
+        CurrentView = _viewModels[ViewTypes.Path];
     }
 
-    private void OnComplete(UserControlTypes success)
+    /// <summary>
+    /// Метод навигации между экранами. Меняет текущий отображаемый ViewModel.
+    /// </summary>
+    public void OnRedirect(ViewTypes targetView)
     {
-        if (_viewModels[UserControlTypes.Layouts] is SelectLayoutsViewModel selectLayoutsViewModel)
+        if (_viewModels.TryGetValue(targetView, out var newViewModel))
         {
-            switch (success)
-            {
-                case UserControlTypes.Edit:
-                    var editLayoutViewModel = new EditLayoutViewModel(selectLayoutsViewModel.NameEditLayout);
-                    if (editLayoutViewModel is IUserControlsNotifier userControlsNotifier)
-                    {
-                        _subscriptions.Add(userControlsNotifier.RedirectToView.Subscribe(OnComplete));
-                    }
-
-                    _viewModels[UserControlTypes.Edit] = editLayoutViewModel;
-                    break;
-
-                case UserControlTypes.Process:
-                    var viewPath = _viewModels[UserControlTypes.Path] as SelectPathsViewModel;
-                    _startService = new StartService(selectLayoutsViewModel.GetCheckedNames(), 
-                        [viewPath.LocationDataText], viewPath.LocationFolderSaveText);
-                    break;
-            }
+            CurrentView = newViewModel;
         }
-
-        ControlSelectPaths = _viewModels[success];
+        else
+        {
+            _logger.LogWarning($"Страница для перемещения на {targetView} не найдена.");
+            _logger.LogWarning($"Перемещение не будет производиться.");
+        }
     }
 }

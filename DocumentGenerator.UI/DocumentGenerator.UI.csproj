@@ -15,20 +15,20 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.2.3" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+        <PackageReference Include="Avalonia" Version="11.2.6" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.6" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.6" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.6" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.3" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.6" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.6" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
         <PackageReference Include="NLog" Version="5.4.0" />
         <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Views\UserControlsView\SelectPathsView.axaml.cs">
+      <Compile Update="Views\Pages\SelectPathsView.axaml.cs">
         <DependentUpon>SelectPathsView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
@@ -37,5 +37,9 @@
     <ItemGroup>
       <ProjectReference Include="..\DocumentGenerator.Core\DocumentGenerator.Core.csproj" />
       <ProjectReference Include="..\DocumentGenerator.Data\DocumentGenerator.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Views\ExtensionPage\SelectPathsView.axaml" />
     </ItemGroup>
 </Project>

@@ -10,16 +10,18 @@
     x:Class="DocumentGenerator.UI.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/Icons/pmm-logo.ico"
-    Width="800"
-    Height="340"
     WindowStartupLocation="CenterScreen"
     Title="Создание документов"
+    MinHeight="340"
+    MinWidth="800"
+    Height="340"
+    Width="800"
     FontFamily="{DynamicResource FuturaNewFontFamily}"
     TransparencyLevelHint="AcrylicBlur">
-    
-    <ContentControl
-        Content="{Binding ControlSelectPaths}" 
-        HorizontalAlignment="Stretch" 
-        VerticalAlignment="Stretch"
-        />
+
+    <ScrollViewer
+        VerticalScrollBarVisibility="Auto">
+        <ContentControl
+            Content="{Binding CurrentView}" />
+    </ScrollViewer>
 </Window>

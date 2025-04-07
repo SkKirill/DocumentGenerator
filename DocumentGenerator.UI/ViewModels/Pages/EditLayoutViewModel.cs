@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Subjects;
-using DocumentGenerator.UI.Services;
+using DocumentGenerator.UI.Models.Pages;
+using DocumentGenerator.UI.Services.WindowsNavigation;
 using ReactiveUI;
 
-namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
+namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class EditLayoutViewModel : ViewModelBase, IUserControlsNotifier
+public class EditLayoutViewModel : ViewModelBase, IManagerWindow
 {
-    private readonly Subject<UserControlTypes> _redirectToView;
-    public IObservable<UserControlTypes> RedirectToView => _redirectToView;
+    public IObservable<ViewTypes> RedirectToView => _redirectToView;
+    private readonly Subject<ViewTypes> _redirectToView;
+    
     public ReactiveCommand<Unit, Unit> ClearActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
 
@@ -21,10 +23,10 @@ public class EditLayoutViewModel : ViewModelBase, IUserControlsNotifier
     
     private string _nameLayout;
     
-    public EditLayoutViewModel(string nameLayout)
+    public EditLayoutViewModel()
     {
-        NameLayout = nameLayout;
-        _redirectToView = new Subject<UserControlTypes>();
+        NameLayout = string.Empty;
+        _redirectToView = new Subject<ViewTypes>();
         ClearActionButton = ReactiveCommand.Create(RunClearAction);
         ContinueButton = ReactiveCommand.Create(RunContinue);
     }
@@ -32,13 +34,13 @@ public class EditLayoutViewModel : ViewModelBase, IUserControlsNotifier
     private void RunContinue()
     {
         // TODO: выполнить сохранение созданных макетов
-        _redirectToView.OnNext(UserControlTypes.Layouts);
+        _redirectToView.OnNext(ViewTypes.Layouts);
     }
 
     private void RunClearAction()
     {
         // TODO: спросить сохранять или удалять выбранные макеты создания файлов
-        _redirectToView.OnNext(UserControlTypes.Layouts);
+        _redirectToView.OnNext(ViewTypes.Layouts);
     }
 
 }

@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using DocumentGenerator.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
 
 namespace DocumentGenerator.UI;
@@ -10,12 +12,26 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        // Загружаем NLog конфиг
+        // Загружаем конфигурацию NLog
         LogManager.Setup().LoadConfigurationFromFile("nlog.config", optional: false);
-        
-        var serviceProvider = new StartServices().ConfigureServices();
 
-        BuildAvaloniaApp(serviceProvider)
+
+        var lineSeparator = new string('-', 100);
+        LogManager.GetCurrentClassLogger().Info(lineSeparator);
+        LogManager.GetCurrentClassLogger().Info("Запуск приложения...");
+        LogManager.GetCurrentClassLogger().Info(lineSeparator);
+
+        // Создаем сервис-провайдер
+        var provider = new StartServices().ConfigureServices();
+
+        var subscribers = provider.GetServices<ISubscriber>();
+        foreach (var subscriber in subscribers)
+        {
+            subscriber.Subscribe();
+        }
+
+        // Запускаем Avalonia-приложение
+        BuildAvaloniaApp(provider)
             .StartWithClassicDesktopLifetime(args);
     }
 
@@ -23,14 +39,8 @@ internal static class Program
     {
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .WithInterFont()
             .LogToTrace()
             .UseReactiveUI()
-            .AfterSetup(_ =>
-            {
-                // Передаем сервис-провайдер в App
-                App.ServiceProvider = serviceProvider;
-            });
+            .AfterSetup(_ => { App.ServiceProvider = serviceProvider; });
     }
 }
-

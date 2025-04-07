@@ -4,22 +4,24 @@ using System.Reactive;
 using System.Reactive.Subjects;
 using Avalonia.Media;
 using DocumentGenerator.UI.Models;
+using DocumentGenerator.UI.Models.Pages;
 using DocumentGenerator.UI.Services;
+using DocumentGenerator.UI.Services.WindowsNavigation;
 using ReactiveUI;
 
-namespace DocumentGenerator.UI.ViewModels.UserControlsViewModel;
+namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
+public class ProcessingViewModel : ViewModelBase, IManagerWindow
 {
     public ObservableCollection<ListItemProcessingModel> ProcessingText { get; set; }
-    private readonly Subject<UserControlTypes> _redirectToView;
-    public IObservable<UserControlTypes> RedirectToView => _redirectToView;
+    private readonly Subject<ViewTypes> _redirectToView;
+    public IObservable<ViewTypes> RedirectToView => _redirectToView;
     public ReactiveCommand<Unit, Unit> ClearActionButton { get; }
     public ReactiveCommand<Unit, Unit> ContinueButton { get; }
     
     public ProcessingViewModel()
     {
-        _redirectToView = new Subject<UserControlTypes>();
+        _redirectToView = new Subject<ViewTypes>();
         ProcessingText = new ObservableCollection<ListItemProcessingModel>();
 
         ProcessingText.Add(new ListItemProcessingModel(Brushes.Red, "Диплом готов"));
@@ -39,13 +41,13 @@ public class ProcessingViewModel : ViewModelBase, IUserControlsNotifier
     
     private void RunContinue()
     {
-        _redirectToView.OnNext(UserControlTypes.Process);
+        _redirectToView.OnNext(ViewTypes.Process);
     }
 
     private void RunGoBackAction()
     {
         // TODO: обработать завершение создание и возможное удаление того что уже создалось
-        _redirectToView.OnNext(UserControlTypes.Layouts);
+        _redirectToView.OnNext(ViewTypes.Layouts);
     }
     
 }

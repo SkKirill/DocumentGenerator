@@ -1,0 +1,47 @@
+﻿<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.ExtensionPages"
+    mc:Ignorable="d"
+    d:DesignWidth="800"
+    d:DesignHeight="340"
+    x:DataType="vm:DataFolderViewModel"
+    FontSize="30"
+    x:Class="DocumentGenerator.UI.Views.ExtensionPages.DataFolderView">
+    <StackPanel
+        Orientation="Vertical">
+        <Grid
+            ColumnDefinitions="*, 80"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+            <TextBox
+                Grid.Column="0"
+                AcceptsReturn="True"
+                Margin="1, 2"
+                Watermark="путь к папке..."
+                HorizontalAlignment="Stretch"
+                CornerRadius="10"
+                Text="{Binding Folder}" />
+            <Button
+                Grid.Column="1"
+                Margin="1, 2"
+                CornerRadius="10"
+                HorizontalAlignment="Stretch"
+                Width="60"
+                Command="{Binding BrowseFolderCommand}">
+                <Image
+                    Margin="5,5,5,5"
+                    Source="../../Assets/Icons/magnifier.ico">
+                </Image>
+            </Button>
+        </Grid>
+        <TextBlock
+            HorizontalAlignment="Stretch"
+            FontSize="18"
+            Text="{Binding HelpText}"
+            Foreground="{Binding HelpColor}"
+            Margin="0,0,0,5" />
+    </StackPanel>
+</UserControl>
