@@ -2,7 +2,7 @@
 
 namespace DocumentGenerator.Core.Services.ReaderColumns;
 
-public class ExcelReaderTable
+public class ExcelReaderTable : IReaderTable
 {
     private readonly string _excelFilePath;
 
