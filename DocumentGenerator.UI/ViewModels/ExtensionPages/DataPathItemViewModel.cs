@@ -60,7 +60,7 @@ public class DataPathItemViewModel : ViewModelBase
                 new FileDialogFilter
                 {
                     Name = "Базы данных и Excel",
-                    Extensions = { "xlsx", "xls", "db", "sqlite", "mdb", "accdb" }
+                    Extensions = { "xlsx", "xls", "db", "sqlite", "mdb", "accdb", "ods" }
                 }
             ]
         };

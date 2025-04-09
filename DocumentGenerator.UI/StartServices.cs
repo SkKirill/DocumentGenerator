@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentGenerator.Core;
 using DocumentGenerator.Data.Models;
+using DocumentGenerator.Data.Models.DataUi;
 using DocumentGenerator.Data.Models.Processing;
 using DocumentGenerator.Data.Services;
 using DocumentGenerator.Data.Services.DataBase.Repositories;
@@ -29,9 +30,16 @@ public static class StartServices
             .AddLogging()
             .AddCore()
             .AddLayouts()
+            .AddData()
             .AddViews();
 
         return services.BuildServiceProvider();
+    }
+
+    private static IServiceCollection AddData(this IServiceCollection services)
+    {
+        return services
+            .AddSingleton<InputData>();
     }
 
     private static IServiceCollection AddLayouts(this IServiceCollection services)

@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using DocumentGenerator.Data.Models.DataUi;
 using DocumentGenerator.UI.Models.ExtensionPages;
 using DocumentGenerator.UI.Models.Pages;
 using DocumentGenerator.UI.Services.WindowsNavigation;
@@ -19,25 +20,31 @@ namespace DocumentGenerator.UI.ViewModels.Pages;
 public class SelectPathsViewModel : ViewModelBase, IManagerWindow
 {
     public IObservable<ViewTypes> RedirectToView => _redirectToView;
-    public ObservableCollection<DataPathItemViewModel> DataPaths { get; set; } = new();
-    public DataFolderViewModel DataFolder { get; set; } = new();
+    public ObservableCollection<DataPathItemViewModel> DataPaths { get; set; }
+    public DataFolderViewModel DataFolder { get; set; }
     public ReactiveCommand<Unit, Unit> GoBackActionCommand => _goBackCommand.Value;
     public ReactiveCommand<Unit, Unit> ContinueActionCommand => _continueCommand.Value;
 
     private readonly Subject<ViewTypes> _redirectToView;
     private readonly ILogger<SelectPathsViewModel> _logger;
-
+    private readonly InputData _inputData;
+    
     // Lazy команды
     private readonly Lazy<ReactiveCommand<Unit, Unit>> _goBackCommand;
     private readonly Lazy<ReactiveCommand<Unit, Unit>> _continueCommand;
 
-    public SelectPathsViewModel(ILogger<SelectPathsViewModel> logger)
+    public SelectPathsViewModel(
+        ILogger<SelectPathsViewModel> logger,
+        InputData inputData)
     {
+        _inputData = inputData;
+        DataPaths = [];
+        DataFolder = new DataFolderViewModel();
         _logger = logger;
         _redirectToView = new Subject<ViewTypes>();
-        _goBackCommand = new(() =>
+        _goBackCommand = new Lazy<ReactiveCommand<Unit, Unit>>(() =>
             ReactiveCommand.CreateFromTask(RunGoBackAction, outputScheduler: RxApp.MainThreadScheduler));
-        _continueCommand = new(() =>
+        _continueCommand = new Lazy<ReactiveCommand<Unit, Unit>>(() =>
             ReactiveCommand.CreateFromTask(RunContinue, outputScheduler: RxApp.MainThreadScheduler));
         AddNewPathItem();
     }
@@ -109,6 +116,8 @@ public class SelectPathsViewModel : ViewModelBase, IManagerWindow
                 throw new ArgumentOutOfRangeException(nameof(DataFolder.IsValid), DataFolder.IsValid, null);
         }
 
+        _inputData.DataPaths = DataPaths.Select(x => x.Path).ToList();
+        _inputData.DataFolder = DataFolder.Folder;
         _redirectToView.OnNext(ViewTypes.Layouts);
     }
 

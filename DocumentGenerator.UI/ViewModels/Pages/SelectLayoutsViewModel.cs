@@ -6,11 +6,10 @@ using System.Reactive;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using DocumentGenerator.Data.Extensions;
-using DocumentGenerator.Data.Models;
+using DocumentGenerator.Data.Models.DataUi;
 using DocumentGenerator.Data.Services.Interfaces;
 using DocumentGenerator.UI.Models;
 using DocumentGenerator.UI.Models.Pages;
-using DocumentGenerator.UI.Services;
 using DocumentGenerator.UI.Services.Edit;
 using DocumentGenerator.UI.Services.WindowsNavigation;
 using DynamicData;
@@ -30,7 +29,8 @@ public class SelectLayoutsViewModel : ViewModelBase, IManagerWindow, ISubscriber
     private readonly List<IDisposable> _subscriptions;
     private readonly ILogger<SelectLayoutsViewModel> _logger;
     private readonly IEnumerable<ILayoutNameNotifier> _layoutNameNotifiers;
-
+    private readonly InputData _inputData; 
+    
     // Lazy команды
     private readonly Lazy<ReactiveCommand<Unit, Unit>> _goBackCommand;
     private readonly Lazy<ReactiveCommand<Unit, Unit>> _continueCommand;
@@ -38,8 +38,10 @@ public class SelectLayoutsViewModel : ViewModelBase, IManagerWindow, ISubscriber
     public SelectLayoutsViewModel(
         ILogger<SelectLayoutsViewModel> logger,
         IEnumerable<ILayoutNameNotifier> layoutNameNotifiers,
-        IEnumerable<ListLayoutsModel> listLayouts)
+        IEnumerable<ListLayoutsModel> listLayouts,
+        InputData inputData)
     {
+        _inputData = inputData;
         _layoutNameNotifiers = layoutNameNotifiers;
         _logger = logger;
         _subscriptions = new List<IDisposable>();
@@ -64,6 +66,7 @@ public class SelectLayoutsViewModel : ViewModelBase, IManagerWindow, ISubscriber
             _logger.LogInformation($"Выбраны макеты для создания: {string.Join(
                 " ",
                 ListLayouts.Select(item => item.NameLayout))}");
+                _inputData.ListLayouts = ListLayouts.Select(item => item.NameLayout).ToList();
             return;
         }
 
