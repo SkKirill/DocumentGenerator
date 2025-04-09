@@ -8,7 +8,7 @@ public abstract class BaseDatabaseModel
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
-        
+
     public DateTime CreatedAt { get; set; }
 
     public BaseDatabaseModel()

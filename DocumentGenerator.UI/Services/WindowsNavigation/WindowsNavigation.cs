@@ -39,11 +39,6 @@ public class WindowsNavigation : IStarterNotifier
         }
     }
 
-    public void Unsubscribe()
-    {
-        _subscriptions.DisposeAndClear();
-    }
-
     private void OnRedirect(ViewTypes targetView)
     {
         _logger.LogInformation($"Переход на страницу -> {targetView.ToDisplayString()}");
