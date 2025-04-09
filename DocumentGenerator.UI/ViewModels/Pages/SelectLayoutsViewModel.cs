@@ -4,78 +4,92 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Subjects;
-using DocumentGenerator.Data.Services;
-using DocumentGenerator.Data.Services.DataBase.Repositories;
+using System.Threading.Tasks;
+using DocumentGenerator.Data.Extensions;
+using DocumentGenerator.Data.Models;
+using DocumentGenerator.Data.Services.Interfaces;
 using DocumentGenerator.UI.Models;
 using DocumentGenerator.UI.Models.Pages;
+using DocumentGenerator.UI.Services;
+using DocumentGenerator.UI.Services.Edit;
 using DocumentGenerator.UI.Services.WindowsNavigation;
+using DynamicData;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class SelectLayoutsViewModel : ViewModelBase, IManagerWindow
+public class SelectLayoutsViewModel : ViewModelBase, IManagerWindow, ISubscriber
 {
     public IObservable<ViewTypes> RedirectToView => _redirectToView;
-    
-    public string NameEditLayout { get; set; }
-    /// <summary>
-    /// Список всех доступных к выбору макетов из базы данных
-    /// </summary>
     public ObservableCollection<ListLayoutsModel> ListLayouts { get; set; }
-    public ReactiveCommand<Unit, Unit> GoBackActionButton { get; }
-    public ReactiveCommand<Unit, Unit> ContinueButton { get; }
+    public ReactiveCommand<Unit, Unit> GoBackActionButton => _goBackCommand.Value;
+    public ReactiveCommand<Unit, Unit> ContinueButton => _continueCommand.Value;
+
     private readonly Subject<ViewTypes> _redirectToView;
     private readonly List<IDisposable> _subscriptions;
+    private readonly ILogger<SelectLayoutsViewModel> _logger;
+    private readonly IEnumerable<ILayoutNameNotifier> _layoutNameNotifiers;
 
-    public SelectLayoutsViewModel()
+    // Lazy команды
+    private readonly Lazy<ReactiveCommand<Unit, Unit>> _goBackCommand;
+    private readonly Lazy<ReactiveCommand<Unit, Unit>> _continueCommand;
+
+    public SelectLayoutsViewModel(
+        ILogger<SelectLayoutsViewModel> logger,
+        IEnumerable<ILayoutNameNotifier> layoutNameNotifiers,
+        IEnumerable<ListLayoutsModel> listLayouts)
     {
+        _layoutNameNotifiers = layoutNameNotifiers;
+        _logger = logger;
         _subscriptions = new List<IDisposable>();
         _redirectToView = new Subject<ViewTypes>();
-        GoBackActionButton = ReactiveCommand.Create(RunGoBackAction);
-        ContinueButton = ReactiveCommand.Create(RunContinue);
+
+        _goBackCommand = new(() =>
+            ReactiveCommand.CreateFromTask(RunGoBackAction, outputScheduler: RxApp.MainThreadScheduler));
+        _continueCommand = new(() =>
+            ReactiveCommand.CreateFromTask(RunContinue, outputScheduler: RxApp.MainThreadScheduler));
+
+        var names = _layoutNameNotifiers.ToList().Select(item => item.NameLayout).ToList();
+
         ListLayouts = [];
-
-        using var layoutRepository = new LayoutRepository();
-        layoutRepository.UseContext(new DatabaseContext());
-
-        var layoutNames = layoutRepository.GetLayoutsAsync().Result
-            .Select(item => item.Name).ToList();
-        
-        layoutNames.Add("Пустой макет");
-        foreach (var name in layoutNames)
-        {
-            var layoutListModel = new ListLayoutsModel($"{name}");
-            _subscriptions.Add(layoutListModel.NameEditLayout.Subscribe(EditItem));
-            ListLayouts.Add(layoutListModel);
-        }
+        ListLayouts.AddRange(listLayouts);
     }
 
-    private void EditItem(string name)
-    {
-        NameEditLayout = name;
-        _redirectToView.OnNext(ViewTypes.Edit);
-    }
-
-    private void RunContinue()
+    private async Task RunContinue()
     {
         if (ListLayouts.Any(item => item.IsChecked))
         {
-           _redirectToView.OnNext(ViewTypes.Process);
-           return; 
+            _redirectToView.OnNext(ViewTypes.Process);
+            _logger.LogInformation($"Выбраны макеты для создания: {string.Join(
+                " ",
+                ListLayouts.Select(item => item.NameLayout))}");
+            return;
         }
-        // TODO: Сделать тостер, что пользователь не тыкнул ни в одну
+
+        _logger.LogWarning("Переход на следующую страницу не будет выполнен -> не выбран ни один макет");
     }
 
-    private void RunGoBackAction()
+    private async Task RunGoBackAction()
     {
         _redirectToView.OnNext(ViewTypes.Path);
     }
 
-    public List<string> GetCheckedNames()
+    public void Subscribe()
     {
-        return ListLayouts
-            .Where(item => item.IsChecked)
-            .Select(item => item.NameLayout)
-            .ToList();
+        foreach (var notifier in _layoutNameNotifiers)
+        {
+            _subscriptions.Add(notifier.NameEditLayout.Subscribe(OnEditItem));
+        }
+    }
+
+    public void Unsubscribe()
+    {
+        _subscriptions.DisposeAndClear();
+    }
+
+    private void OnEditItem(string name)
+    {
+        _redirectToView.OnNext(ViewTypes.Edit);
     }
 }

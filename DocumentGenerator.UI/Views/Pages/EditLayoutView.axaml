@@ -29,7 +29,7 @@
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 Margin="25,0,110, 0"
-                Command="{Binding ClearActionButton}"
+                Command="{Binding GoBackCommand}"
                 Background="OrangeRed"
                 HorizontalContentAlignment="Center"
                 CornerRadius="10">
@@ -56,7 +56,7 @@
                 HorizontalAlignment="Stretch"
                 Margin="90,0,25, 0"
                 Background="LimeGreen"
-                Command="{Binding ContinueButton}">
+                Command="{Binding ContinueCommand}">
                 <Button.Content>
                     <StackPanel
                         Orientation="Horizontal">

@@ -16,12 +16,12 @@
     <Grid
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
-        RowDefinitions="6*, 1.5*"
+        RowDefinitions="*, Auto"
         Margin="20, 15, 20, 20">
 
         <Grid
             VerticalAlignment="Stretch"
-            RowDefinitions="*, 7*"
+            RowDefinitions="Auto, *"
             HorizontalAlignment="Stretch">
             <TextBlock
                 Grid.Row="0"
@@ -68,7 +68,7 @@
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 Margin="25,0,110, 0"
-                Command="{Binding ClearActionButton}"
+                Command="{Binding GoBackCommand}"
                 Background="OrangeRed"
                 HorizontalContentAlignment="Center"
                 CornerRadius="10">
@@ -96,7 +96,7 @@
                 HorizontalAlignment="Stretch"
                 Margin="90,0,25, 0"
                 Background="LimeGreen"
-                Command="{Binding ContinueButton}">
+                Command="{Binding ContinueCommand}">
                 <Button.Content>
                     <StackPanel
                         Orientation="Horizontal">

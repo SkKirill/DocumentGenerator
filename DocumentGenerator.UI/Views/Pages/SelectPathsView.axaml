@@ -16,7 +16,6 @@
 
     <StackPanel
         Orientation="Vertical"
-        VerticalAlignment="Top"
         Margin="20, 15, 20, 0">
 
         <Grid
@@ -70,7 +69,7 @@
                 Grid.Row="0" Grid.Column="1"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Bottom"
-                Margin="90,3,25, 0"
+                Margin="90,3,25, 10"
                 Background="LimeGreen"
                 Command="{Binding ContinueActionCommand}">
                 <Button.Content>

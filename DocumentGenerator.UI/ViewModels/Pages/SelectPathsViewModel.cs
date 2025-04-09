@@ -106,7 +106,7 @@ public class SelectPathsViewModel : ViewModelBase, IManagerWindow
 
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(DataFolder.IsValid), DataFolder.IsValid, null);
         }
 
         _redirectToView.OnNext(ViewTypes.Layouts);

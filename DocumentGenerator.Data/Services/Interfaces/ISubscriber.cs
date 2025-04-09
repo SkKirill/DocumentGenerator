@@ -1,4 +1,4 @@
-﻿namespace DocumentGenerator.UI.Services;
+﻿namespace DocumentGenerator.Data.Services.Interfaces;
 
 public interface ISubscriber
 {

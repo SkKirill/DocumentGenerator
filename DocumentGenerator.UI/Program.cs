@@ -1,13 +1,19 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using DocumentGenerator.Core.Services;
+using DocumentGenerator.Data.Models;
+using DocumentGenerator.Data.Models.Processing;
+using DocumentGenerator.Data.Services.Interfaces;
 using DocumentGenerator.UI.Services;
+using DocumentGenerator.UI.Services.WindowsNavigation;
+using DocumentGenerator.UI.ViewModels.Pages;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
 
 namespace DocumentGenerator.UI;
 
-internal static class Program
+public static class Program
 {
     [STAThread]
     public static void Main(string[] args)
@@ -22,8 +28,11 @@ internal static class Program
         LogManager.GetCurrentClassLogger().Info(lineSeparator);
 
         // Создаем сервис-провайдер
-        var provider = new StartServices().ConfigureServices();
-
+        var provider = StartServices.ConfigureServices();
+        
+        var startProcess = provider.GetRequiredService<StartProcess>();
+        startProcess.StarterNotifier = provider.GetRequiredService<IStarterNotifier>();
+        
         var subscribers = provider.GetServices<ISubscriber>();
         foreach (var subscriber in subscribers)
         {

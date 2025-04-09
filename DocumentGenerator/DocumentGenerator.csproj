@@ -1,21 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
-        <LangVersion>13</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
-      <PackageReference Include="NLog" Version="5.4.0" />
-      <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.3" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\DocumentGenerator.Core\DocumentGenerator.Core.csproj" />
-      <ProjectReference Include="..\DocumentGenerator.Data\DocumentGenerator.Data.csproj" />
       <ProjectReference Include="..\DocumentGenerator.UI\DocumentGenerator.UI.csproj" />
     </ItemGroup>
 

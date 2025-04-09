@@ -1,11 +1,9 @@
-﻿using System;
+﻿using DocumentGenerator.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Linq;
-using DocumentGenerator.Core;
-using DocumentGenerator.Data.Models;
-using DocumentGenerator.Data.Models.Processing;
 using DocumentGenerator.Data.Services;
 using DocumentGenerator.Data.Services.DataBase.Repositories;
-using DocumentGenerator.Data.Services.Interfaces;
 using DocumentGenerator.UI.Models;
 using DocumentGenerator.UI.Services;
 using DocumentGenerator.UI.Services.Edit;
@@ -17,24 +15,27 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 
-namespace DocumentGenerator.UI;
+namespace DocumentGenerator;
 
+/// <summary>
+/// Сборка и конфигурирование контейнера для приложения
+/// </summary>
 public static class StartServices
 {
     public static IServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
+        AddLogging(services);
+        AddLayouts(services);
+        AddViews(services);
 
         services
-            .AddLogging()
-            .AddCore()
-            .AddLayouts()
-            .AddViews();
+            .AddStartServices();
 
         return services.BuildServiceProvider();
     }
 
-    private static IServiceCollection AddLayouts(this IServiceCollection services)
+    private static void AddLayouts(IServiceCollection services)
     {
         using var layoutRepository = new LayoutRepository();
         layoutRepository.UseContext(new DatabaseContext());
@@ -48,14 +49,12 @@ public static class StartServices
                 .AddSingleton(provider => new ListLayoutsModel(name))
                 .AddSingleton<ILayoutNameNotifier>(provider => provider.GetRequiredService<ListLayoutsModel>());
         }
-
-        return services;
     }
 
     /// <summary>
     /// Добавление страниц
     /// </summary>
-    private static IServiceCollection AddViews(this IServiceCollection services)
+    private static void AddViews(ServiceCollection services)
     {
         services
             .AddSingleton<MainWindowViewModel>()
@@ -74,22 +73,27 @@ public static class StartServices
 
         services
             .AddSingleton<WindowsNavigation>()
-            .AddSingleton<IStarterNotifier>(provider => provider.GetRequiredService<WindowsNavigation>())
+            .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<WindowsNavigation>())
             .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<SelectLayoutsViewModel>())
-            .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<ProcessingViewModel>())
-            .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<EditLayoutViewModel>());
-        
-        return services;
+            .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<EditLayoutViewModel>())
+            .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<ProcessingViewModel>());
     }
 
     /// <summary>
     /// Добавление логирования в приложение 
     /// </summary>
-    private static IServiceCollection AddLogging(this IServiceCollection services)
+    private static void AddLogging(ServiceCollection services)
     {
-        return services.AddLogging(builder => builder
+        services.AddLogging(builder => builder
             .ClearProviders()
             .SetMinimumLevel(LogLevel.Trace)
             .AddNLog());
+    }
+
+    public static IServiceCollection AddStartServices(this IServiceCollection services)
+    {
+        return services
+            .AddSingleton<StartProcess>()
+            .AddSingleton<IWriteProcessingNotifier>(provider => provider.GetRequiredService<StartProcess>());
     }
 }
