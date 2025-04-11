@@ -74,10 +74,10 @@ public static class StartServices
             .AddSingleton<DataPathItemViewModel>();
 
         services
-            .AddSingleton<IManagerWindow>(provider => provider.GetRequiredService<EditLayoutViewModel>())
-            .AddSingleton<IManagerWindow>(provider => provider.GetRequiredService<SelectLayoutsViewModel>())
-            .AddSingleton<IManagerWindow>(provider => provider.GetRequiredService<ProcessingViewModel>())
-            .AddSingleton<IManagerWindow>(provider => provider.GetRequiredService<SelectPathsViewModel>())
+            .AddSingleton<IWindowManager>(provider => provider.GetRequiredService<EditLayoutViewModel>())
+            .AddSingleton<IWindowManager>(provider => provider.GetRequiredService<SelectLayoutsViewModel>())
+            .AddSingleton<IWindowManager>(provider => provider.GetRequiredService<ProcessingViewModel>())
+            .AddSingleton<IWindowManager>(provider => provider.GetRequiredService<SelectPathsViewModel>())
             .AddSingleton<IViewNavigation>(provider => provider.GetRequiredService<MainWindowViewModel>());
 
         services

@@ -5,12 +5,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.Pages"
     mc:Ignorable="d"
-    d:DesignWidth="1000"
-    d:DesignHeight="500"
     x:DataType="vm:EditLayoutViewModel"
     FontSize="30"
-    MinHeight="340"
-    MinWidth="800"
     x:Class="DocumentGenerator.UI.Views.Pages.EditLayoutView">
     <Grid
         RowDefinitions="Auto, *, Auto">

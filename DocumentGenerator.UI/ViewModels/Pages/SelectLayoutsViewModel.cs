@@ -18,7 +18,7 @@ using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class SelectLayoutsViewModel : ViewModelBase, IManagerWindow, ISubscriber
+public class SelectLayoutsViewModel : ViewModelBase, IWindowManager, ISubscriber
 {
     public IObservable<ViewTypes> RedirectToView => _redirectToView;
     public ObservableCollection<ListLayoutsModel> ListLayouts { get; set; }

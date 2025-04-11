@@ -1,4 +1,5 @@
 ﻿using DocumentGenerator.Core.Services;
+using DocumentGenerator.Core.Services.ReaderTables;
 using DocumentGenerator.Data.Models.Processing;
 using DocumentGenerator.Data.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ public static class StartServicesCore
         return services
             .AddSingleton<StartProcess>()
             .AddSingleton<IWriteProcessingNotifier>(provider => provider.GetRequiredService<StartProcess>())
-            .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<StartProcess>());
+            .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<StartProcess>())
+            .AddSingleton<IReadManager, ReadManager>();
     }
 }

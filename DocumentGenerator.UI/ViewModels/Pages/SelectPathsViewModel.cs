@@ -17,7 +17,7 @@ using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class SelectPathsViewModel : ViewModelBase, IManagerWindow
+public class SelectPathsViewModel : ViewModelBase, IWindowManager
 {
     public IObservable<ViewTypes> RedirectToView => _redirectToView;
     public ObservableCollection<DataPathItemViewModel> DataPaths { get; set; }
@@ -116,7 +116,7 @@ public class SelectPathsViewModel : ViewModelBase, IManagerWindow
                 throw new ArgumentOutOfRangeException(nameof(DataFolder.IsValid), DataFolder.IsValid, null);
         }
 
-        _inputData.DataPaths = DataPaths.Select(x => x.Path).ToList();
+        _inputData.DataPaths = DataPaths.Where(item => item.IsValid).Select(x => x.Path).ToList();
         _inputData.DataFolder = DataFolder.Folder;
         _redirectToView.OnNext(ViewTypes.Layouts);
     }

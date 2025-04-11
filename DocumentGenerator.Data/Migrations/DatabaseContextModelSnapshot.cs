@@ -15,12 +15,15 @@ namespace DocumentGenerator.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
 
-            modelBuilder.Entity("DocumentGenerator.Data.Models.Layout", b =>
+            modelBuilder.Entity("DocumentGenerator.Data.Models.DataBase.Layout", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ConfigurationId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -32,7 +35,65 @@ namespace DocumentGenerator.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ConfigurationId");
+
                     b.ToTable("Layouts");
+                });
+
+            modelBuilder.Entity("DocumentGenerator.Data.Models.DataBase.Output.BaseConfigurationModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ConfigurationType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConfigurationModels");
+
+                    b.HasDiscriminator<int>("ConfigurationType");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("DocumentGenerator.Data.Models.DataBase.Output.NoTable.ConfigurationModelPage", b =>
+                {
+                    b.HasBaseType("DocumentGenerator.Data.Models.DataBase.Output.BaseConfigurationModel");
+
+                    b.Property<int>("ExportFormats")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PageOrientations")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SaveToFolder")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WatermarkFolder")
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("DocumentGenerator.Data.Models.DataBase.Output.Table.ConfigurationModelTable", b =>
+                {
+                    b.HasBaseType("DocumentGenerator.Data.Models.DataBase.Output.BaseConfigurationModel");
+
+                    b.HasDiscriminator().HasValue(0);
+                });
+
+            modelBuilder.Entity("DocumentGenerator.Data.Models.DataBase.Layout", b =>
+                {
+                    b.HasOne("DocumentGenerator.Data.Models.DataBase.Output.BaseConfigurationModel", "Configuration")
+                        .WithMany()
+                        .HasForeignKey("ConfigurationId");
+
+                    b.Navigation("Configuration");
                 });
 #pragma warning restore 612, 618
         }

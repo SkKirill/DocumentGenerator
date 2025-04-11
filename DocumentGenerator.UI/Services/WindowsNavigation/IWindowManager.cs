@@ -7,7 +7,7 @@ namespace DocumentGenerator.UI.Services.WindowsNavigation;
 /// <summary>
 /// Интерфейс выкидывающий событие с типом страницы, которую нужно показать пользователю
 /// </summary>
-public interface IManagerWindow
+public interface IWindowManager
 {
     IObservable<ViewTypes> RedirectToView { get; }
 }

@@ -1,6 +1,6 @@
 ﻿using DocumentGenerator.Data.Models.Data;
 
-namespace DocumentGenerator.Core.Services.ReaderColumns;
+namespace DocumentGenerator.Core.Services.ReaderTables;
 
 public interface IReaderTable
 {

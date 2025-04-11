@@ -47,5 +47,8 @@
         <ProjectReference Include="..\DocumentGenerator.Data\DocumentGenerator.Data.csproj" />
 
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Services\Convertors\" />
+    </ItemGroup>
 
 </Project>

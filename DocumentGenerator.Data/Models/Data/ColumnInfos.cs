@@ -10,7 +10,7 @@ public class ColumnInfos
     /// <summary>
     /// Номер колонки (A1 => 1 / B1 => 2 / и тд)
     /// </summary>
-    public string ColumnNumber { get; set; }
+    public int ColumnNumber { get; set; }
     
     /// <summary>
     /// Путь к таблице из которой нужно брать информацию о данной колонке

@@ -16,11 +16,11 @@ public class WindowsNavigation : IStarterNotifier
     
     private readonly List<IDisposable> _subscriptions;
     private readonly ILogger<WindowsNavigation> _logger;
-    private readonly IEnumerable<IManagerWindow> _managerWindowNotifier;
+    private readonly IEnumerable<IWindowManager> _managerWindowNotifier;
     private readonly IViewNavigation _navigation;
     private readonly Subject<bool> _starter;
 
-    public WindowsNavigation(ILogger<WindowsNavigation> logger, IEnumerable<IManagerWindow> managerWindowNotifier,
+    public WindowsNavigation(ILogger<WindowsNavigation> logger, IEnumerable<IWindowManager> managerWindowNotifier,
         IViewNavigation navigation)
     {
         _starter = new Subject<bool>();

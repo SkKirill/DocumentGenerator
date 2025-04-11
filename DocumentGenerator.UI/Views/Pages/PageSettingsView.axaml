@@ -1,0 +1,45 @@
+﻿<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.Pages"
+    xmlns:views="clr-namespace:DocumentGenerator.UI.Views.ExtensionPages"
+    mc:Ignorable="d"
+    d:DesignWidth="1000"
+    d:DesignHeight="500"
+    x:DataType="vm:PageSettingsViewModel"
+    FontSize="30"
+    MinHeight="340"
+    MinWidth="800"
+    x:Class="DocumentGenerator.UI.Views.Pages.PageSettingsView">
+    <StackPanel Spacing="15">
+
+        <TextBlock Text="Настройка страницы Word/Pdf" FontWeight="Bold" FontSize="28" />
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock VerticalAlignment="Center" Text="Ориентация:" Width="160" />
+            <ComboBox Width="200"
+                      ItemsSource="{Binding Orientations}"
+                      SelectedItem="{Binding SelectedOrientations}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock VerticalAlignment="Center" Text="Подложка:" Width="160" />
+            <views:DataFolderView DataContext="{Binding WatermarkFolder}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock VerticalAlignment="Center" Text="Формат:" Width="160" />
+            <ComboBox Width="200"
+                      ItemsSource="{Binding Formats}"
+                      SelectedItem="{Binding SelectedFormats}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock VerticalAlignment="Center" Text="Сохранить в:" Width="160" />
+            <views:DataFolderView DataContext="{Binding SaveToFolder}" />
+        </StackPanel>
+
+    </StackPanel>
+</UserControl>
