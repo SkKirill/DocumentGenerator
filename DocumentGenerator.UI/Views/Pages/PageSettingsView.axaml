@@ -4,42 +4,116 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:DocumentGenerator.UI.ViewModels.Pages"
-    xmlns:views="clr-namespace:DocumentGenerator.UI.Views.ExtensionPages"
     mc:Ignorable="d"
-    d:DesignWidth="1000"
-    d:DesignHeight="500"
     x:DataType="vm:PageSettingsViewModel"
     FontSize="30"
-    MinHeight="340"
-    MinWidth="800"
     x:Class="DocumentGenerator.UI.Views.Pages.PageSettingsView">
-    <StackPanel Spacing="15">
+    <StackPanel 
+        Spacing="12"
+        Margin="15">
 
-        <TextBlock Text="Настройка страницы Word/Pdf" FontWeight="Bold" FontSize="28" />
+        <TextBlock Text="Настройка страницы Word/Pdf" FontWeight="Bold" FontSize="28" 
+                   HorizontalAlignment="Center"
+                   Margin="7"/>
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock VerticalAlignment="Center" Text="Ориентация:" Width="160" />
+        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Stretch" Spacing="15">
+            <TextBlock 
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                Text="Ориентация:     " 
+                Width="160" 
+                />
             <ComboBox Width="200"
+                      HorizontalAlignment="Stretch"
                       ItemsSource="{Binding Orientations}"
                       SelectedItem="{Binding SelectedOrientations}" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock VerticalAlignment="Center" Text="Подложка:" Width="160" />
-            <views:DataFolderView DataContext="{Binding WatermarkFolder}" />
+        <StackPanel Orientation="Vertical" >
+            <TextBlock 
+                VerticalAlignment="Center" 
+                HorizontalAlignment="Left"
+                Text="Подложка:" 
+                Width="160" 
+                />
+            <ContentControl
+                Content="{Binding WatermarkFolder}" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock VerticalAlignment="Center" Text="Формат:" Width="160" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Spacing="15">
+            <TextBlock 
+                VerticalAlignment="Center" 
+                HorizontalAlignment="Left"
+                Text="Выходной формат:" 
+                Width="160" 
+                />
             <ComboBox Width="200"
+                      HorizontalAlignment="Stretch"
                       ItemsSource="{Binding Formats}"
                       SelectedItem="{Binding SelectedFormats}" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock VerticalAlignment="Center" Text="Сохранить в:" Width="160" />
-            <views:DataFolderView DataContext="{Binding SaveToFolder}" />
+        <StackPanel Orientation="Vertical" >
+            <TextBlock 
+                VerticalAlignment="Center" 
+                HorizontalAlignment="Left"
+                Text="Сохранить в:" 
+                Width="160" 
+                />
+            <ContentControl
+                Content="{Binding SaveToFolder}" />
         </StackPanel>
+        
+        <Grid
+            VerticalAlignment="Bottom"
+            ColumnDefinitions="*, *">
+            <Button
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                Margin="25,0,110, 0"
+                Command="{Binding GoBackCommand}"
+                Background="OrangeRed"
+                HorizontalContentAlignment="Center"
+                CornerRadius="10">
+                <Button.Content>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <Image
+                            Width="36"
+                            Height="34"
+                            VerticalAlignment="Stretch"
+                            Margin="0,4,0,0"
+                            Source="../../Assets/Icons/left-arrow.ico">
+                        </Image>
+                        <TextBlock
+                            Text=" Вернуться">
+                        </TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button
+                CornerRadius="10"
+                HorizontalContentAlignment="Center"
+                Grid.Row="0" Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                Margin="90,0,25, 0"
+                Background="LimeGreen"
+                Command="{Binding ContinueCommand}">
+                <Button.Content>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Text="Продолжить ">
+                        </TextBlock>
+                        <Image
+                            Width="35"
+                            Margin="0,4,0,0"
+                            Source="../../Assets/Icons/arrow-right.ico">
+                        </Image>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
 
     </StackPanel>
 </UserControl>

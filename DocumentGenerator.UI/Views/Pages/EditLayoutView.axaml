@@ -11,7 +11,7 @@
     <Grid
         RowDefinitions="Auto, *, Auto">
         <Grid
-            ColumnDefinitions="*, Auto"
+            ColumnDefinitions="*, *"
             Grid.Column="0"
             HorizontalAlignment="Stretch">
                 <TextBlock
@@ -19,13 +19,23 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"
                     Text="{Binding NameLayout}">
-                <ComboBox
+                </TextBlock>
+                <Button
                     Grid.Column="1"
-                    HorizontalAlignment="Right">
-                </ComboBox>
-
-            </TextBlock>
+                    CornerRadius="10"
+                    HorizontalContentAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    Margin="90,0,25, 0"
+                    Background="DimGray"
+                    Command="{Binding GoSettingsCommand}">
+                    <Button.Content>
+                        <TextBlock
+                            Text="Настройки ">
+                        </TextBlock>
+                    </Button.Content>
+                </Button>
         </Grid>
+        
         <Grid
             Grid.Row="1"
             RowDefinitions="Auto, *"

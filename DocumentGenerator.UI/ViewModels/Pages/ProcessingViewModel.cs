@@ -17,7 +17,7 @@ using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class ProcessingViewModel : ViewModelBase, IWindowManager, ISubscriber
+public class ProcessingViewModel : ViewModelBase, IWindowNavigation, ISubscriber
 {
     public ObservableCollection<ListItemProcessingModel> ProcessingText { get; set; }
     private readonly Subject<ViewTypes> _redirectToView;

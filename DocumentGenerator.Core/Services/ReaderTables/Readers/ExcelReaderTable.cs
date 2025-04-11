@@ -34,10 +34,13 @@ public class ExcelReaderTable : IReaderTable
                     var cellValue = (usedRange.Cells[1, numColumn] as Excel.Range)?.Text;
                     if (cellValue == null)
                         continue;
+                    
+                    if (string.IsNullOrWhiteSpace(cellValue.ToString()))
+                        continue;
 
                     columnInfos.Add(new ColumnInfos
                     {
-                        ColumnName = cellValue.ToString(),
+                        ColumnName = excelSheet.Name + "_" + cellValue.ToString(),
                         ColumnNumber = numColumn,
                         SourceTable = _excelFilePath
                     });

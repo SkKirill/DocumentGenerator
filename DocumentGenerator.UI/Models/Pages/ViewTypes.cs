@@ -5,5 +5,6 @@ public enum ViewTypes
     Layouts,
     Path,
     Edit,
-    Process
+    Process,
+    Settings
 }

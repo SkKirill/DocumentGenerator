@@ -77,7 +77,7 @@ public class ReadManager : IReadManager
                 
                 var columnInfos = reader.GetAllTablesInfos();
                 _logger.LogInformation($"Файл: {path}, колонок {columnInfos.Count}, " +
-                                       $"названия: {string.Join(',', columnInfos.Select(item => item.ColumnName))}");
+                                       $"названия: {string.Join(" || ", columnInfos.Select(item => item.ColumnName))}");
                 
                 columns.AddRange(columnInfos);
             }

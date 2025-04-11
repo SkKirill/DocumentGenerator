@@ -9,18 +9,18 @@ using Microsoft.Extensions.Logging;
 
 namespace DocumentGenerator.UI.Services.WindowsNavigation;
 
-public class WindowsNavigation : IStarterNotifier
+public class WindowsNavigationManager : IStarterNotifier
 {
     public IObservable<bool> Start => _starter;
     
     
     private readonly List<IDisposable> _subscriptions;
-    private readonly ILogger<WindowsNavigation> _logger;
-    private readonly IEnumerable<IWindowManager> _managerWindowNotifier;
+    private readonly ILogger<WindowsNavigationManager> _logger;
+    private readonly IEnumerable<IWindowNavigation> _managerWindowNotifier;
     private readonly IViewNavigation _navigation;
     private readonly Subject<bool> _starter;
 
-    public WindowsNavigation(ILogger<WindowsNavigation> logger, IEnumerable<IWindowManager> managerWindowNotifier,
+    public WindowsNavigationManager(ILogger<WindowsNavigationManager> logger, IEnumerable<IWindowNavigation> managerWindowNotifier,
         IViewNavigation navigation)
     {
         _starter = new Subject<bool>();
@@ -44,10 +44,9 @@ public class WindowsNavigation : IStarterNotifier
         _logger.LogInformation($"Переход на страницу -> {targetView.ToDisplayString()}");
         switch (targetView)
         {
+            case ViewTypes.Settings:
             case ViewTypes.Layouts:
-                break;
             case ViewTypes.Path:
-                break;
             case ViewTypes.Edit:
                 break;
             case ViewTypes.Process:
@@ -56,6 +55,7 @@ public class WindowsNavigation : IStarterNotifier
             default:
                 throw new ArgumentOutOfRangeException(nameof(targetView), targetView, null);
         }
+
         _navigation.OnRedirect(targetView);
     }
 }

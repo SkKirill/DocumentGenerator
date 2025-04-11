@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using DocumentGenerator.UI.Models.Extensions;
 using DocumentGenerator.UI.Models.Pages;
 using DocumentGenerator.UI.Services.WindowsNavigation;
 using DocumentGenerator.UI.ViewModels.Pages;
@@ -34,6 +36,7 @@ public class MainWindowViewModel : ViewModelBase, IViewNavigation
         SelectLayoutsViewModel selectLayoutsViewModel,
         SelectPathsViewModel selectPathsViewModel,
         ProcessingViewModel processingViewModel,
+        PageSettingsViewModel pageSettingsViewModel,
         EditLayoutViewModel editLayoutViewModel)
     {
         _logger = logger;
@@ -43,7 +46,8 @@ public class MainWindowViewModel : ViewModelBase, IViewNavigation
             { ViewTypes.Layouts, selectLayoutsViewModel },
             { ViewTypes.Path, selectPathsViewModel },
             { ViewTypes.Edit, editLayoutViewModel },
-            { ViewTypes.Process, processingViewModel }
+            { ViewTypes.Process, processingViewModel },
+            { ViewTypes.Settings, pageSettingsViewModel }
         };
 
         // Установка начального экрана
@@ -53,16 +57,15 @@ public class MainWindowViewModel : ViewModelBase, IViewNavigation
     /// <summary>
     /// Метод навигации между экранами. Меняет текущий отображаемый ViewModel.
     /// </summary>
-    public void OnRedirect(ViewTypes targetView)
+    public async Task<bool> OnRedirect(ViewTypes targetView)
     {
-        if (_viewModels.TryGetValue(targetView, out var newViewModel))
+        if (!_viewModels.TryGetValue(targetView, out var newViewModel))
         {
-            CurrentView = newViewModel;
+            _logger.LogWarning($"Ошибка при перемещении на  страницу {targetView.ToDisplayString()}. Страница не найдена.");
+            return false;
         }
-        else
-        {
-            _logger.LogWarning($"Страница для перемещения на {targetView} не найдена.");
-            _logger.LogWarning($"Перемещение не будет производиться.");
-        }
+        
+        CurrentView = newViewModel;
+        return true;
     }
 }

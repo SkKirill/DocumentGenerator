@@ -17,7 +17,7 @@ using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class SelectPathsViewModel : ViewModelBase, IWindowManager
+public class SelectPathsViewModel : ViewModelBase, IWindowNavigation
 {
     public IObservable<ViewTypes> RedirectToView => _redirectToView;
     public ObservableCollection<DataPathItemViewModel> DataPaths { get; set; }

@@ -20,13 +20,15 @@ using ReactiveUI;
 
 namespace DocumentGenerator.UI.ViewModels.Pages;
 
-public class EditLayoutViewModel : ViewModelBase, IWindowManager, ISubscriber
+public class EditLayoutViewModel : ViewModelBase, IWindowNavigation, ISubscriber
 {
     public IObservable<ViewTypes> RedirectToView => _redirectToView;
     private readonly Subject<ViewTypes> _redirectToView;
 
     public ReactiveCommand<Unit, Unit> GoBackCommand => _goBackCommand.Value;
     public ReactiveCommand<Unit, Unit> ContinueCommand => _continueCommand.Value;
+    public ReactiveCommand<Unit, Unit> GoSettingsCommand => _goSettings.Value;
+
 
     public string NameLayout
     {
@@ -39,9 +41,10 @@ public class EditLayoutViewModel : ViewModelBase, IWindowManager, ISubscriber
     // Lazy команды
     private readonly Lazy<ReactiveCommand<Unit, Unit>> _goBackCommand;
     private readonly Lazy<ReactiveCommand<Unit, Unit>> _continueCommand;
+    private readonly Lazy<ReactiveCommand<Unit, Unit>> _goSettings;
     private readonly List<IDisposable> _subscriptions;
-    private readonly ILogger<EditLayoutViewModel> _logger;
     private readonly IEnumerable<ILayoutNameNotifier> _layoutNameNotifiers;
+    private readonly ILogger<EditLayoutViewModel> _logger;
     private readonly IReadManager _readManager;
     private string _nameLayout;
 
@@ -61,6 +64,8 @@ public class EditLayoutViewModel : ViewModelBase, IWindowManager, ISubscriber
             ReactiveCommand.CreateFromTask(RunGoBackAction, outputScheduler: RxApp.MainThreadScheduler));
         _continueCommand = new(() =>
             ReactiveCommand.CreateFromTask(RunContinue, outputScheduler: RxApp.MainThreadScheduler));
+        _goSettings = new(() =>
+            ReactiveCommand.CreateFromTask(RunGoSettings, outputScheduler: RxApp.MainThreadScheduler));
     }
 
     private async Task RunContinue()
@@ -68,10 +73,16 @@ public class EditLayoutViewModel : ViewModelBase, IWindowManager, ISubscriber
         // TODO: выполнить сохранение созданных макетов
         _redirectToView.OnNext(ViewTypes.Layouts);
     }
+    
+    private async Task RunGoSettings()
+    {
+        // TODO: переход на страницу с настройками
+        _redirectToView.OnNext(ViewTypes.Settings);
+    }
 
     private async Task RunGoBackAction()
     {
-        // TODO: спросить сохранять или удалять выбранные макеты создания файлов
+        // TODO: не сохранять изменения
         _redirectToView.OnNext(ViewTypes.Layouts);
     }
 

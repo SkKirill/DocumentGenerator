@@ -71,20 +71,23 @@ public static class StartServices
             .AddSingleton<ProcessingViewModel>()
             .AddSingleton<SelectPathsViewModel>()
             .AddSingleton<EditLayoutViewModel>()
-            .AddSingleton<DataPathItemViewModel>();
+            .AddSingleton<DataPathItemViewModel>()
+            .AddSingleton<PageSettingsViewModel>();
 
         services
-            .AddSingleton<IWindowManager>(provider => provider.GetRequiredService<EditLayoutViewModel>())
-            .AddSingleton<IWindowManager>(provider => provider.GetRequiredService<SelectLayoutsViewModel>())
-            .AddSingleton<IWindowManager>(provider => provider.GetRequiredService<ProcessingViewModel>())
-            .AddSingleton<IWindowManager>(provider => provider.GetRequiredService<SelectPathsViewModel>())
+            .AddSingleton<IWindowNavigation>(provider => provider.GetRequiredService<EditLayoutViewModel>())
+            .AddSingleton<IWindowNavigation>(provider => provider.GetRequiredService<SelectLayoutsViewModel>())
+            .AddSingleton<IWindowNavigation>(provider => provider.GetRequiredService<ProcessingViewModel>())
+            .AddSingleton<IWindowNavigation>(provider => provider.GetRequiredService<SelectPathsViewModel>())
+            .AddSingleton<IWindowNavigation>(provider => provider.GetRequiredService<PageSettingsViewModel>())
             .AddSingleton<IViewNavigation>(provider => provider.GetRequiredService<MainWindowViewModel>());
 
         services
-            .AddSingleton<WindowsNavigation>()
-            .AddSingleton<IStarterNotifier>(provider => provider.GetRequiredService<WindowsNavigation>())
+            .AddSingleton<WindowsNavigationManager>()
+            .AddSingleton<IStarterNotifier>(provider => provider.GetRequiredService<WindowsNavigationManager>())
             .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<SelectLayoutsViewModel>())
             .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<ProcessingViewModel>())
+            .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<PageSettingsViewModel>())
             .AddSingleton<ISubscriber>(provider => provider.GetRequiredService<EditLayoutViewModel>());
         
         return services;
